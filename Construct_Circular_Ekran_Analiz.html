@@ -1,0 +1,439 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Construct Circular - Ekran Analizi</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 20mm;
+            background: white;
+        }
+        
+        h1 {
+            color: #1a202c;
+            font-size: 2.5em;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #2ecc71, #1abc9c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        h2 {
+            color: #2d3748;
+            font-size: 1.8em;
+            font-weight: 600;
+            margin: 2rem 0 1rem 0;
+            border-left: 4px solid #2ecc71;
+            padding-left: 1rem;
+        }
+        
+        h3 {
+            color: #4a5568;
+            font-size: 1.4em;
+            font-weight: 500;
+            margin: 1.5rem 0 1rem 0;
+        }
+        
+        p, li {
+            margin-bottom: 0.8rem;
+            text-align: justify;
+        }
+        
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+        
+        strong {
+            color: #2d3748;
+            font-weight: 600;
+        }
+        
+        .screen-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid #3182ce;
+        }
+        
+        @page {
+            size: A4;
+            margin: 15mm;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="construct-circular-ekran-ekran-fonksiyonel-analiz">Construct Circular - Ekran Ekran Fonksiyonel Analiz</h1>
+<p><strong>Tarih:</strong> 17 June 2025, 19:30<br />
+<strong>Platform:</strong> Construct Circular v2.0<br />
+<strong>Kapsam:</strong> Tüm Ekranlar ve Fonksiyonellik  </p>
+<hr />
+<h2 id="ana-sayfa-ve-giris">Ana Sayfa ve Giriş</h2>
+<h3 id="ana-sayfa">Ana Sayfa (/)</h3>
+<p><strong>Fonksiyonlar:</strong>
+- Otomatik yönlendirme (giriş yapmış kullanıcılar dashboard'a)
+- Giriş formu görüntüleme
+- Dil değiştirme (TR/EN)
+- Logo ve marka kimliği</p>
+<p><strong>UI Bileşenleri:</strong>
+- Header: Icon logo + gradyan yazı
+- Hero section: Ana logo (280px) + açıklama
+- Navigation menu: Responsive hamburger menu
+- Footer: Üniversite ve TÜBİTAK logoları</p>
+<p><strong>Teknik Özellikler:</strong>
+- Flask route: @main_bp.route('/', methods=['GET', 'POST'])
+- Template: auth/login.html
+- Responsive design: Bootstrap grid
+- CSS gradyan: linear-gradient(135deg, #2ecc71, #1abc9c)</p>
+<hr />
+<h2 id="kimlik-dogrulama-ekranlar">Kimlik Doğrulama Ekranları</h2>
+<h3 id="giris-ekran-login">Giriş Ekranı (/login)</h3>
+<p><strong>Form Alanları:</strong>
+- Email/Username (zorunlu, validasyonlu)
+- Şifre (güvenli giriş)
+- Rol seçimi (Company/Contractor dropdown)
+- Giriş butonu + kayıt linkleri</p>
+<p><strong>Güvenlik:</strong>
+- CSRF token koruması
+- Input validation (client + server)
+- Session management
+- Brute force protection</p>
+<p><strong>Fonksiyonlar:</strong>
+- Kullanıcı doğrulama
+- Rol tabanlı yönlendirme
+- Hata mesajları
+- Remember me özelliği</p>
+<h3 id="sirket-kayt-registercompany">Şirket Kayıt (/register/company)</h3>
+<p><strong>Form Alanları:</strong>
+- Username (2-20 karakter, benzersiz)
+- Email (geçerli, benzersiz)
+- Şifre (min 6 karakter)
+- Şifre tekrarı
+- Şirket adı (2-100 karakter)
+- Şirket açıklaması (opsiyonel)</p>
+<p><strong>Validasyon:</strong>
+- Real-time benzersizlik kontrolü
+- Güçlü şifre gereksinimleri
+- Email format doğrulama</p>
+<h3 id="muteahhit-kayt-registercontractor">Müteahhit Kayıt (/register/contractor)</h3>
+<p><strong>Özel Alanlar:</strong>
+- Uzmanlık alanı (2-100 karakter)
+- Deneyim yılı (0-100 numerik)
+- Portfolio bilgileri
+- Sertifikalar</p>
+<p><strong>Fonksiyonlar:</strong>
+- Uzmanlık kategorileri
+- Deneyim validasyonu
+- Portfolio upload
+- Yetenek değerlendirmesi</p>
+<hr />
+<h2 id="dashboard-ekranlar">Dashboard Ekranları</h2>
+<h3 id="sirket-dashboard-dashboard">Şirket Dashboard (/dashboard)</h3>
+<p><strong>Metrik Kartları:</strong>
+- Toplam projeler (status breakdown)
+- Aktif başvurular (review gerekli)
+- Tamamlanan işler
+- Bütçe özeti</p>
+<p><strong>Hızlı Eylemler:</strong>
+- Yeni proje oluştur butonu
+- Başvuruları görüntüle
+- Raporları incele
+- Profil güncelle</p>
+<p><strong>Görselleştirme:</strong>
+- Chart.js interactive charts
+- Progress bars
+- Timeline view
+- Status indicators</p>
+<h3 id="muteahhit-dashboard-dashboard">Müteahhit Dashboard (/dashboard)</h3>
+<p><strong>Başvuru Kartları:</strong>
+- DRAFT (taslak başvurular)
+- PENDING (değerlendirme bekleyen)
+- ACCEPTED (kabul edilen)
+- REJECTED (reddedilen)</p>
+<p><strong>Fonksiyonlar:</strong>
+- Proje arama ve filtreleme
+- Başvuru durumu takibi
+- Profil tamamlama progress
+- Performans metrikleri</p>
+<hr />
+<h2 id="proje-yonetimi">Proje Yönetimi</h2>
+<h3 id="proje-olusturma-projectscreate">Proje Oluşturma (/projects/create)</h3>
+<p><strong>Temel Bilgiler:</strong>
+- Proje adı (2-100 karakter)
+- Proje açıklaması
+- Beklentiler
+- Lokasyon</p>
+<p><strong>Zaman Planı:</strong>
+- Başlangıç tarihi (DatePicker)
+- Bitiş tarihi (validation)
+- Otomatik süre hesaplama</p>
+<p><strong>Bütçe ve Kriterler:</strong>
+- Bütçe aralığı dropdown
+- Değerlendirme kriterleri
+- KPI tanımlama</p>
+<p><strong>Özel Fonksiyonlar:</strong>
+- Taslak kaydetme
+- Kriter ağırlık hesaplama
+- Dosya yükleme
+- Önizleme sistemi</p>
+<h3 id="proje-detay-projects">Proje Detay (/projects/<id>)</h3>
+<p><strong>Bilgi Bölümleri:</strong>
+- Proje özeti
+- Zaman çizelgesi
+- Bütçe bilgileri
+- Değerlendirme kriterleri</p>
+<p><strong>Başvuru Sistemi:</strong>
+- Başvuru butonu (contractors)
+- Real-time başvuru sayacı
+- Son başvuru tarihi countdown
+- Gereksinimler listesi</p>
+<p><strong>Şirket Kontrolü:</strong>
+- Düzenleme butonu (owner only)
+- Başvuru listesi
+- Proje durumu değiştirme
+- İstatistikler</p>
+<h3 id="kriter-yonetimi-projectscriteria">Kriter Yönetimi (/projects/<id>/criteria)</h3>
+<p><strong>Hiyerarşik Yapı:</strong>
+- Ana kriterler
+- Alt kriterler (ağırlıklı)
+- KPI tanımlama
+- Ağırlık dağılımı</p>
+<p><strong>Fuzzy TOPSIS:</strong>
+- Low/medium/high weight values
+- Otomatik normalizasyon
+- Matematiksel doğrulama
+- Önizleme sistemi</p>
+<hr />
+<h2 id="basvuru-sistemi">Başvuru Sistemi</h2>
+<h3 id="basvuru-formu-apply">Başvuru Formu (/apply/<project_id>)</h3>
+<p><strong>Dinamik Form:</strong>
+- Cover letter (rich text editor)
+- KPI belgeleri (dinamik upload fields)
+- Dosya önizleme
+- Taslak kaydetme</p>
+<p><strong>Draft Sistemi:</strong>
+- Otomatik kaydetme (30 saniye)
+- Validasyon atlama
+- Session recovery
+- Visual status indicator</p>
+<p><strong>Dosya Yönetimi:</strong>
+- Çoklu format (PDF, DOC, DOCX, TXT)
+- Boyut kontrolü
+- Güvenlik validation
+- Önizleme sistemi</p>
+<h3 id="basvuru-durumu-applications">Başvuru Durumu (/applications/<id>)</h3>
+<p><strong>Durum Takibi:</strong>
+- Visual timeline progression
+- AI değerlendirme sonuçları
+- TOPSIS puanı
+- Feedback ve öneriler</p>
+<p><strong>Düzenleme:</strong>
+- Belge güncelleme
+- Cover letter edit
+- Ek bilgi ekleme
+- Withdraw seçeneği</p>
+<h3 id="basvuru-listesi-my-applications">Başvuru Listesi (/my-applications)</h3>
+<p><strong>Filtreleme:</strong>
+- Status filtreleri
+- Tarih sıralaması
+- Proje kategorisi
+- Puan sıralaması</p>
+<p><strong>Toplu İşlemler:</strong>
+- Çoklu seçim
+- Bulk delete
+- PDF export
+- İstatistik dashboard</p>
+<hr />
+<h2 id="admin-panel">Admin Panel</h2>
+<h3 id="admin-dashboard-admin">Admin Dashboard (/admin)</h3>
+<p><strong>Sistem İstatistikleri:</strong>
+- Kullanıcı sayıları (role breakdown)
+- Aktif projeler
+- Günlük aktivite
+- Sistem sağlığı</p>
+<p><strong>Yönetim Araçları:</strong>
+- Kullanıcı yönetimi
+- Proje oversight
+- Sistem konfigürasyon
+- Log görüntüleme</p>
+<h3 id="kullanc-yonetimi-adminusers">Kullanıcı Yönetimi (/admin/users)</h3>
+<p><strong>Kullanıcı Tablosu:</strong>
+- Filtreleme (role, date, status)
+- Arama (username, email)
+- Sıralama
+- Sayfalama</p>
+<p><strong>İşlemler:</strong>
+- Profil görüntüleme
+- Rol değiştirme
+- Hesap durumu
+- Password reset</p>
+<h3 id="kpi-yonetimi-adminkpis">KPI Yönetimi (/admin/kpis)</h3>
+<p><strong>Konfigürasyon:</strong>
+- Global KPIs
+- AI evaluation settings
+- Scoring algorithms
+- Weight templates</p>
+<hr />
+<h2 id="profil-yonetimi">Profil Yönetimi</h2>
+<h3 id="sirket-profil-profilecompany">Şirket Profil (/profile/company)</h3>
+<p><strong>Düzenlenebilir:</strong>
+- Şirket adı
+- Açıklama
+- İletişim bilgileri
+- Logo yükleme</p>
+<p><strong>Ayarlar:</strong>
+- Profil görünürlüğü
+- İletişim tercihleri
+- Bildirim ayarları</p>
+<h3 id="muteahhit-profil-profilecontractor">Müteahhit Profil (/profile/contractor)</h3>
+<p><strong>Profesyonel Bilgiler:</strong>
+- Uzmanlık alanları
+- Deneyim detayları
+- Sertifikalar
+- Portfolio</p>
+<p><strong>Performans:</strong>
+- Başarı oranı
+- Ortalama puan
+- Müşteri değerlendirmeleri
+- Tamamlanan projeler</p>
+<hr />
+<h2 id="rapor-ve-analiz">Rapor ve Analiz</h2>
+<h3 id="topsis-raporu-projectstopsis-report">TOPSIS Raporu (/projects/<id>/topsis-report)</h3>
+<p><strong>Analiz Bileşenleri:</strong>
+- Karar matrisi
+- Ağırlık dağılımı
+- Alternatif sıralaması
+- Skor dağılımı</p>
+<p><strong>Export:</strong>
+- PDF rapor
+- Excel data
+- Chart images
+- Summary report</p>
+<h3 id="performans-analiz-reportsperformance">Performans Analiz (/reports/performance)</h3>
+<p><strong>Metrik Kategorileri:</strong>
+- Kullanıcı performansı
+- Proje başarı oranları
+- AI değerlendirme doğruluğu
+- Sistem kullanımı</p>
+<hr />
+<h2 id="ozel-fonksiyonlar">Özel Fonksiyonlar</h2>
+<h3 id="ai-degerlendirme-sistemi">AI Değerlendirme Sistemi</h3>
+<p><strong>Süreç:</strong>
+1. Belge yükleme ve validation
+2. Text extraction (çoklu format)
+3. GPT-4o powered analysis
+4. 1-7 scale scoring
+5. TOPSIS calculation</p>
+<h3 id="fuzzy-topsis-algoritmas">Fuzzy TOPSIS Algoritması</h3>
+<p><strong>Adımlar:</strong>
+1. Matrix normalization
+2. Weight application
+3. Ideal solutions
+4. Distance calculation
+5. Ranking</p>
+<h3 id="draft-sistemi">Draft Sistemi</h3>
+<p><strong>Özellikler:</strong>
+- Auto-save (JavaScript timer)
+- Change detection
+- Network handling
+- Recovery system</p>
+<hr />
+<h2 id="mobil-uyumluluk">Mobil Uyumluluk</h2>
+<h3 id="responsive-breakpoints">Responsive Breakpoints</h3>
+<ul>
+<li>xs (&lt;576px): Mobile portrait</li>
+<li>sm (≥576px): Mobile landscape</li>
+<li>md (≥768px): Tablets</li>
+<li>lg (≥992px): Small desktops</li>
+<li>xl (≥1200px): Large desktops</li>
+</ul>
+<h3 id="touch-interface">Touch Interface</h3>
+<ul>
+<li>44px minimum touch targets</li>
+<li>Gesture support</li>
+<li>Keyboard optimization</li>
+<li>Zoom prevention</li>
+</ul>
+<hr />
+<h2 id="guvenlik-ve-performans">Güvenlik ve Performans</h2>
+<h3 id="guvenlik-katmanlar">Güvenlik Katmanları</h3>
+<ul>
+<li>Password hashing (Werkzeug)</li>
+<li>Session management</li>
+<li>CSRF protection</li>
+<li>Input validation</li>
+</ul>
+<h3 id="performans-optimizasyonu">Performans Optimizasyonu</h3>
+<ul>
+<li>Database indexing</li>
+<li>Query optimization</li>
+<li>CSS/JS minification</li>
+<li>Image optimization</li>
+<li>Browser caching</li>
+</ul>
+<hr />
+<h2 id="teknik-ozellikler">Teknik Özellikler</h2>
+<h3 id="backend-stack">Backend Stack</h3>
+<ul>
+<li>Python 3.11</li>
+<li>Flask framework</li>
+<li>SQLAlchemy ORM</li>
+<li>PostgreSQL database</li>
+</ul>
+<h3 id="frontend-stack">Frontend Stack</h3>
+<ul>
+<li>HTML5 semantic markup</li>
+<li>CSS3 with Grid/Flexbox</li>
+<li>JavaScript + Chart.js</li>
+<li>Bootstrap 5 framework</li>
+</ul>
+<h3 id="ai-integration">AI Integration</h3>
+<ul>
+<li>OpenAI GPT-4o API</li>
+<li>Document processing</li>
+<li>Intelligent scoring</li>
+</ul>
+<hr />
+<h2 id="ekran-istatistikleri">Ekran İstatistikleri</h2>
+<p><strong>Toplam Kapsam:</strong>
+- 20+ ana fonksiyonel ekran
+- 31 HTML template
+- 15 Python modül
+- 4,117 satır kod</p>
+<p><strong>Kategoriler:</strong>
+- 5 kimlik doğrulama ekranı
+- 4 dashboard ekranı
+- 6 proje yönetimi ekranı
+- 3 başvuru sistemi ekranı
+- 4 admin panel ekranı
+- 2 profil yönetimi ekranı
+- 2 rapor ekranı</p>
+<p><strong>Özel Özellikler:</strong>
+- AI-powered evaluation
+- Fuzzy TOPSIS analysis
+- Multi-language support
+- Role-based architecture
+- Draft system
+- Real-time updates</p>
+<hr />
+<p><strong>Platform Durumu:</strong> Production Ready<br />
+<strong>Son Güncelleme:</strong> 17 June 2025<br />
+<strong>Versiyon:</strong> 2.0  </p>
+    
+    <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 2px solid #e2e8f0;">
+        <p><strong>Yıldız Teknik Üniversitesi - TÜBİTAK Destekli Proje</strong></p>
+        <p>Bu ekran analiz raporu, Construct Circular platformunun tüm fonksiyonelliklerini kapsar.</p>
+    </div>
+</body>
+</html>
