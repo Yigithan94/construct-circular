@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Construct Circular - {{ _('Circular Economy-Based Decision Support Tool for Contractor Selection') }}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <meta name="msapplication-TileImage" content="{{ url_for('static', filename='images/favicon.png') }}">
+    
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .navbar-brand img {
+            height: 60px;
+            width: auto;
+            margin-right: 15px;
+            filter: brightness(1.0) contrast(1.0) saturate(1.0);
+            transition: all 0.3s ease;
+        }
+        .hero-section {
+            padding: 1rem 0 2rem 0;
+            background: linear-gradient(135deg, var(--bs-dark) 0%, var(--bs-gray-900) 100%);
+            margin-bottom: 1rem;
+        }
+        .hero-logo {
+            width: 280px;
+            height: auto;
+            margin-bottom: 0.75rem;
+            margin-top: -1rem;
+            filter: brightness(1.0) saturate(1.1);
+            transition: all 0.4s ease;
+        }
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #3498db, #2ecc71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--bs-gray-400);
+            max-width: 600px;
+            margin: 0 auto 0.5rem auto;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.index') }}">
+                <img src="{{ url_for('static', filename='images/construct-circular-header-logo.png') }}" alt="Construct Circular Logo">
+                <span>Construct Circular</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.dashboard') }}">{{ _('Dashboard') }}</a>
+                    </li>
+                    {% if current_user.is_administrator() %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin.index') }}">{{ _('Admin Panel') }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin.manage_criteria') }}">{{ _('Manage Criteria') }}</a>
+                    </li>
+                    {% endif %}
+                    {% if current_user.is_contractor() %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.my_applications') }}">{{ _('My Applications') }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('reports.contractor_performance') }}">{{ _('Performance Report') }}</a>
+                    </li>
+                    {% endif %}
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav">
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="user-avatar me-2">
+                                {% if current_user.role == 'company' %}
+                                    {% set display_name = current_user.company_name or current_user.username %}
+                                    {% set words = display_name.split() %}
+                                    {% if words|length > 1 %}
+                                        {% set avatar_text = words[0][0] + words[1][0] %}
+                                    {% elif display_name|length > 1 %}
+                                        {% set avatar_text = display_name[:2] %}
+                                    {% else %}
+                                        {% set avatar_text = display_name[0] %}
+                                    {% endif %}
+                                    <div class="avatar-circle company-gradient">
+                                        {{ avatar_text.upper() }}
+                                    </div>
+                                {% else %}
+                                    {% set display_name = current_user.username %}
+                                    {% set words = display_name.split() %}
+                                    {% if words|length > 1 %}
+                                        {% set avatar_text = words[0][0] + words[1][0] %}
+                                    {% elif display_name|length > 1 %}
+                                        {% set avatar_text = display_name[:2] %}
+                                    {% else %}
+                                        {% set avatar_text = display_name[0] %}
+                                    {% endif %}
+                                    <div class="avatar-circle contractor-gradient">
+                                        {{ avatar_text.upper() }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            {{ _('Account') }}
+                        </a>
+                        <ul class="dropdown-menu account-dropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('main.account') }}">{{ _('Account Information') }}</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li class="dropdown-submenu">
+                                <a class="dropdown-item dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                    {{ _('Language') }}
+                                </a>
+                                <ul class="dropdown-menu dropdown-submenu-menu">
+                                    {% for code, name in config['LANGUAGES'].items() %}
+                                    <li>
+                                        <a class="dropdown-item {% if code == get_locale() %}active{% endif %}" 
+                                           href="{{ url_for('main.set_language', lang=code) }}">
+                                            {{ name }}
+                                        </a>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li class="logout-item"><a class="dropdown-item" href="{{ url_for('auth.logout') }}">{{ _('Logout') }}</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.login') }}">{{ _('Login') }}</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            {{ _('Register') }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('auth.register_company') }}">{{ _('Register as Owner') }}</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('auth.register_contractor') }}">{{ _('Register as Contractor') }}</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            {{ _('Language') }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            {% for code, name in config['LANGUAGES'].items() %}
+                            <li>
+                                <a class="dropdown-item {% if code == get_locale() %}active{% endif %}" 
+                                   href="{{ url_for('main.set_language', lang=code) }}">
+                                    {{ name }}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero-section">
+        <div class="container text-center">
+            <img src="{{ url_for('static', filename='images/construct-circular-new-logo.png') }}" alt="{{ _('Circular Economy-Based Decision Support Tool for Contractor Selection Logo') }}" class="hero-logo">
+            <h1 class="hero-title">{{ _('Circular Economy-Based Decision Support Tool for Contractor Selection') }}</h1>
+            <p class="hero-subtitle">{{ _('A next-generation platform integrating circular economy principles and artificial intelligence to evaluate and prequalify construction contractors.') }}</p>
+        </div>
+    </div>
+
+
+    <main class="container mt-2">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="alert alert-info">
+            {{ messages[0] }}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light mt-5 py-4">
+        <div class="container">
+            <div class="text-center">
+                <p class="mb-2">&copy; 2025 Construct Circular. {{ _('All rights reserved.') }}</p>
+                <small class="text-muted d-block mb-3">{{ _('This platform was developed as part of a Ph.D. research at Yıldız Technical University.') }}</small>
+                <img src="{{ url_for('static', filename='images/yildiz-logo.png') }}" alt="Yıldız Teknik Üniversitesi" style="height: 60px; opacity: 0.9;">
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
