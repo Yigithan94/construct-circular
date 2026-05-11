@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80" width="200" height="80">
+  <!-- Yıldız Teknik Üniversitesi Logo SVG -->
+  <defs>
+    <linearGradient id="yildizGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#8B0000;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#DC143C;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="200" height="80" fill="#ffffff" stroke="#e0e0e0" stroke-width="1"/>
+  
+  <!-- Star symbol -->
+  <polygon points="40,15 42,21 48,21 43,25 45,31 40,27 35,31 37,25 32,21 38,21" fill="url(#yildizGradient)"/>
+  
+  <!-- University text -->
+  <text x="65" y="20" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="url(#yildizGradient)">YILDIZ TEKNİK</text>
+  <text x="65" y="35" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="url(#yildizGradient)">ÜNİVERSİTESİ</text>
+  
+  <!-- English text -->
+  <text x="40" y="50" font-family="Arial, sans-serif" font-size="8" fill="#666666">Yildiz Technical University</text>
+  
+  <!-- Established year -->
+  <text x="40" y="65" font-family="Arial, sans-serif" font-size="7" fill="#999999">Est. 1911</text>
+  
+  <!-- Decorative elements -->
+  <circle cx="170" cy="25" r="8" fill="none" stroke="url(#yildizGradient)" stroke-width="2" opacity="0.5"/>
+  <circle cx="170" cy="25" r="4" fill="url(#yildizGradient)" opacity="0.3"/>
+</svg>
