@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block title %}TOPSIS Karşılaştırmalı Analiz - {{ project.name }}{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    .score-bar {
+        height: 20px;
+        background-color: #4CAF50;
+        border-radius: 5px;
+    }
+    
+    .comparison-table th, .comparison-table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+    .criteria-group {
+        margin-bottom: 30px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 15px;
+    }
+    
+    .rank-1 {
+        background-color: #d4edda;
+        font-weight: bold;
+    }
+    
+    .rank-2 {
+        background-color: #fff3cd;
+    }
+    
+    .rank-3 {
+        background-color: #f8d7da;
+    }
+    
+    .score-chart {
+        height: 300px;
+        margin-bottom: 30px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>{{ _('TOPSIS Karşılaştırmalı Analiz') }}</h2>
+        <div>
+            <a href="/project/{{ project.id }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> {{ _('Projeye Dön') }}
+            </a>
+            <a href="/reports/project/{{ project.id }}/download-topsis-report" class="btn btn-success">
+                <i class="fas fa-download"></i> {{ _('PDF İndir') }}
+            </a>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">{{ project.name }}</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>{{ _('Proje Sahibi') }}:</strong> {{ project.user.username }}</p>
+                    <p><strong>{{ _('Durum') }}:</strong> {{ project.status.value|capitalize }}</p>
+                    <p><strong>{{ _('Oluşturulma Tarihi') }}:</strong> {{ project.created_at.strftime('%Y-%m-%d') }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>{{ _('Beklenen Bitiş Tarihi') }}:</strong> {{ project.deadline.strftime('%Y-%m-%d') }}</p>
+                    <p><strong>{{ _('Lokasyon') }}:</strong> {{ project.location }}</p>
+                    <p><strong>{{ _('Başvuru Sayısı') }}:</strong> {{ applications|length }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- TOPSIS Puanlarına Göre Sıralanmış Başvurular -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">{{ _('Başvuruların TOPSIS Puanlarına Göre Sıralaması') }}</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>{{ _('Sıra') }}</th>
+                            <th>{{ _('Contractor') }}</th>
+                            <th>{{ _('TOPSIS Puanı') }}</th>
+                            <th>{{ _('Bütçe') }}</th>
+                            <th>{{ _('Süre (gün)') }}</th>
+                            <th>{{ _('İşlemler') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in ranked_applications %}
+                        <tr class="{% if loop.index == 1 %}rank-1{% elif loop.index == 2 %}rank-2{% elif loop.index == 3 %}rank-3{% endif %}">
+                            <td>{{ loop.index }}</td>
+                            <td>{{ app.contractor.username }}</td>
+                            <td>
+                                {% if app.topsis_score %}
+                                <div>{{ "%.6f"|format(app.topsis_score) }}</div>
+                                <div class="progress mt-1" style="height: 5px;">
+                                    <div class="progress-bar" role="progressbar" style="width: {{ (app.topsis_score * 100)|round }}%"></div>
+                                </div>
+                                {% else %}
+                                <span class="text-muted">N/A</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ app.proposed_budget }}</td>
+                            <td>{{ app.proposed_duration }}</td>
+                            <td>
+                                <a href="/application/{{ app.id }}" class="btn btn-sm btn-info">
+                                    {{ _('Detaylar') }}
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Kriterlere Göre Karşılaştırma -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">{{ _('Kriterlere Göre Karşılaştırma') }}</h5>
+        </div>
+        <div class="card-body">
+            {% for criterion in project.selected_criteria %}
+            <div class="criteria-group">
+                <h5>{{ criterion.name }}</h5>
+                {% if criterion.description %}
+                <p class="text-muted">{{ criterion.description }}</p>
+                {% endif %}
+                
+                <div class="table-responsive">
+                    <table class="table table-bordered comparison-table">
+                        <thead>
+                            <tr>
+                                <th>{{ _('Contractor') }}</th>
+                                <th>{{ _('Puan') }}</th>
+                                <th>{{ _('Yüzde') }}</th>
+                                <th>{{ _('Görselleştirme') }}</th>
+                                <th>{{ _('Sıralama') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for app in ranked_applications %}
+                                {% if (app.id, criterion.id) in criterion_scores %}
+                                <tr>
+                                    <td>{{ app.contractor.username }}</td>
+                                    <td>{{ criterion_scores[(app.id, criterion.id)]['score'] }}/7</td>
+                                    <td>{{ "%.1f"|format(criterion_scores[(app.id, criterion.id)]['percentage']) }}%</td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar" role="progressbar" 
+                                                style="width: {{ criterion_scores[(app.id, criterion.id)]['percentage']|round }}%">
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ criterion_scores[(app.id, criterion.id)]['rank'] }}</td>
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Alt Kriterler -->
+                {% set ns = namespace(has_subs=false) %}
+                {% for sub in criterion.sub_criteria %}
+                    {% if sub in project.selected_subcriteria %}
+                        {% set ns.has_subs = true %}
+                    {% endif %}
+                {% endfor %}
+                
+                {% if ns.has_subs %}
+                <h6 class="mt-4">{{ _('Alt Kriterler') }}</h6>
+                {% for sub in criterion.sub_criteria %}
+                    {% if sub in project.selected_subcriteria %}
+                    <div class="card mt-3">
+                        <div class="card-header bg-light">
+                            {{ sub.name }} ({{ _('Ağırlık') }}: {{ sub.weight }})
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered comparison-table">
+                                    <thead>
+                                        <tr>
+                                            <th>{{ _('Contractor') }}</th>
+                                            <th>{{ _('Puan') }}</th>
+                                            <th>{{ _('Yüzde') }}</th>
+                                            <th>{{ _('Görselleştirme') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for app in ranked_applications %}
+                                            {% if (app.id, sub.id) in subcriterion_scores %}
+                                            <tr>
+                                                <td>{{ app.contractor.username }}</td>
+                                                <td>{{ subcriterion_scores[(app.id, sub.id)]['score'] }}/7</td>
+                                                <td>{{ "%.1f"|format(subcriterion_scores[(app.id, sub.id)]['percentage']) }}%</td>
+                                                <td>
+                                                    <div class="progress" style="height: 10px;">
+                                                        <div class="progress-bar" role="progressbar" 
+                                                            style="width: {{ subcriterion_scores[(app.id, sub.id)]['percentage']|round }}%">
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
