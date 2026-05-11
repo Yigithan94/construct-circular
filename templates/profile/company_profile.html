@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">{{ _('Owner Profile') }}</h4>
+                </div>
+                <div class="card-body">
+                    {% if current_user.is_company() %}
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h5>{{ _('Owner Information') }}</h5>
+                                <table class="table">
+                                    <tr>
+                                        <th>{{ _('Owner Name') }}</th>
+                                        <td>{{ current_user.company_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>{{ _('Email') }}</th>
+                                        <td>{{ current_user.email }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>{{ _('Member Since') }}</th>
+                                        <td>{{ current_user.created_at.strftime('%Y-%m-%d') }}</td>
+                                    </tr>
+                                </table>
+
+                                {% if current_user.company_description %}
+                                <div class="mt-4">
+                                    <h5>{{ _('About Company') }}</h5>
+                                    <p>{{ current_user.company_description }}</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-end">
+                                    <a href="{{ url_for('main.edit_company_profile') }}" class="btn btn-primary">
+                                        <i class="fas fa-edit"></i> {{ _('Edit Profile') }}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Projects Section -->
+                        <div class="mt-4">
+                            <h5>{{ _('Projects') }}</h5>
+                            {% if current_user.projects %}
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>{{ _('Project Name') }}</th>
+                                                <th>{{ _('Created Date') }}</th>
+                                                <th>{{ _('Status') }}</th>
+                                                <th>{{ _('Actions') }}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for project in current_user.projects %}
+                                            <tr>
+                                                <td>{{ project.name }}</td>
+                                                <td>{{ project.created_at.strftime('%Y-%m-%d') }}</td>
+                                                <td>
+                                                    <span class="badge bg-success">{{ _('Active') }}</span>
+                                                </td>
+                                                <td>
+                                                    <a href="{{ url_for('main.view_project', project_id=project.id) }}" 
+                                                       class="btn btn-sm btn-info">
+                                                        {{ _('View') }}
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-muted">{{ _('No projects created yet.') }}</p>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            {{ _('Access Denied. This page is only accessible to company accounts.') }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
