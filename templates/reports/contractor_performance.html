@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>{{ _('Contractor Performance Report') }}</h2>
+                <a href="{{ url_for('reports.contractor_performance_pdf') }}" class="btn btn-primary">
+                    <i class="fas fa-file-pdf"></i> {{ _('Download PDF Report') }}
+                </a>
+            </div>
+            <p class="text-muted">{{ _('Detailed analysis of your application history and performance metrics') }}</p>
+        </div>
+    </div>
+
+    <!-- Performance Overview Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h6 class="card-title">{{ _('Total Applications') }}</h6>
+                    <h2 class="card-text">{{ total_applications }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h6 class="card-title">{{ _('Success Rate') }}</h6>
+                    <h2 class="card-text">{{ "%.1f"|format(success_rate) }}%</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h6 class="card-title">{{ _('Average TOPSIS Score') }}</h6>
+                    <h2 class="card-text">{{ "%.3f"|format(avg_topsis) }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h6 class="card-title">{{ _('Pending Applications') }}</h6>
+                    <h2 class="card-text">{{ pending_applications }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Status Breakdown -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">{{ _('Application Status Distribution') }}</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">{{ _('Preferred Project Types and Scores') }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="accordion" id="projectTypesAccordion">
+                        {% for type in project_types %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" 
+                                        data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}">
+                                    {{ type.name }}
+                                    <span class="badge bg-primary rounded-pill ms-2">{{ type.count }}</span>
+                                </button>
+                            </h2>
+                            <div id="collapse{{ loop.index }}" 
+                                 class="accordion-collapse collapse {% if loop.first %}show{% endif %}" 
+                                 data-bs-parent="#projectTypesAccordion">
+                                <div class="accordion-body">
+                                    {% if type.subcriteria %}
+                                    <h6 class="mb-3">{{ _('Subcriteria Performance') }}</h6>
+                                    <div class="list-group">
+                                        {% for sub in type.subcriteria %}
+                                        <div class="list-group-item">
+                                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                                <h6 class="mb-1">{{ sub.name }}</h6>
+                                                <span class="badge bg-info">{{ "%.2f"|format(sub.avg_score) }}</span>
+                                            </div>
+                                            <small class="text-muted">
+                                                {{ _('Based on') }} {{ sub.count }} {{ _('evaluations') }}
+                                            </small>
+                                            <div class="progress mt-2" style="height: 5px;">
+                                                <div class="progress-bar bg-info" role="progressbar" 
+                                                     style="width: {{ (sub.avg_score * 100)|round }}%"></div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% else %}
+                                    <p class="text-muted mb-0">{{ _('No subcriteria data available') }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Applications Table -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">{{ _('Recent Applications') }}</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>{{ _('Project') }}</th>
+                            <th>{{ _('Status') }}</th>
+                            <th>{{ _('TOPSIS Score') }}</th>
+                            <th>{{ _('Applied Date') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in applications[:10] %}
+                        <tr>
+                            <td>
+                                <a href="{{ url_for('main.view_project', project_id=app.project.id) }}">
+                                    {{ app.project.name }}
+                                </a>
+                            </td>
+                            <td>
+                                <span class="badge {% if app.status.value == 'accepted' %}bg-success
+                                    {% elif app.status.value == 'rejected' %}bg-danger
+                                    {% else %}bg-warning{% endif %}">
+                                    {{ app.status.value|title }}
+                                </span>
+                            </td>
+                            <td>{{ "%.6f"|format(app.topsis_score) if app.topsis_score else 'N/A' }}</td>
+                            <td>{{ app.created_at.strftime('%Y-%m-%d') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js for visualizations -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Status Distribution Chart
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'pie',
+        data: {
+            labels: [
+                '{{ _("Accepted") }}',
+                '{{ _("Rejected") }}',
+                '{{ _("Pending") }}'
+            ],
+            datasets: [{
+                data: [
+                    {{ accepted_applications }},
+                    {{ rejected_applications }},
+                    {{ pending_applications }}
+                ],
+                backgroundColor: [
+                    '#28a745',
+                    '#dc3545',
+                    '#ffc107'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
