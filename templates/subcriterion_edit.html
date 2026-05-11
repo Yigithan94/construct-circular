@@ -1,0 +1,421 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">{{ _('Edit Sub-criterion') }}</h4>
+                    {% if criterion %}
+                    <p class="text-muted mb-0">{{ _('For criterion') }}: {{ criterion.name }}</p>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('main.edit_subcriterion', subcriterion_id=subcriterion.id) }}" id="subcriterion-form">
+                        <!-- CSRF token control devre dışı, CSRF koruması app.py'da kapatıldı -->
+                        <!-- Basic Information -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">{{ _('Basic Information') }}</h5>
+                            <div class="mb-3">
+                                <label class="form-label">{{ _('Name') }}</label>
+                                <input type="text" name="name" class="form-control" 
+                                       value="{{ subcriterion.name }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">{{ _('Description') }}</label>
+                                <textarea name="description" class="form-control" rows="3">{{ subcriterion.description }}</textarea>
+                            </div>
+                        </div>
+
+                        <!-- Weight Setting -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">{{ _('Weight Setting') }}</h5>
+                            <div class="mb-3">
+                                <label class="form-label">{{ _('Weight') }}</label>
+                                <div class="input-group">
+                                    <input type="number" name="weight" class="form-control" 
+                                           value="{{ "%.3f"|format(subcriterion.weight) }}" 
+                                           step="0.001" min="0" max="1" required>
+                                    <span class="input-group-text">{{ _('Overall Weight') }}</span>
+                                </div>
+                                <small class="form-text text-muted">
+                                    {{ _('Weight must be between 0 and 1') }}
+                                </small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">{{ _('Detay Ağırlık') }}</label>
+                                <div class="input-group">
+                                    <input type="number" name="detail_weight" class="form-control" 
+                                           value="{{ "%.6f"|format(subcriterion.detail_weight) if subcriterion.detail_weight else 1.0 }}" 
+                                           step="0.000001" min="0" max="10" required>
+                                    <span class="input-group-text">{{ _('Detay Analiz Ağırlığı') }}</span>
+                                </div>
+                                <small class="form-text text-muted">
+                                    {{ _('Detay ağırlık 0 ile 10 arasında olmalıdır') }}
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <!-- KPI Settings -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">{{ _('KPI Settings') }}</h5>
+                            <p class="text-muted mb-3">{{ _('KPI settings are kept separate from the general TOPSIS calculation') }}</p>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="has_kpi" id="has_kpi" 
+                                       {% if subcriterion.has_kpi %}checked{% endif %}
+                                       onchange="toggleKpiFields(this.checked)">
+                                <label class="form-check-label" for="has_kpi">
+                                    {{ _('Define KPIs for this Sub-criterion') }}
+                                </label>
+                            </div>
+                            
+                            <div id="kpi_fields" class="{% if not subcriterion.has_kpi %}d-none{% endif %}">
+                                <!-- Mevcut KPI Listesi -->
+                                {% if kpis %}
+                                <div class="card mb-3">
+                                    <div class="card-header bg-primary text-white">
+                                        <h6 class="mb-0">{{ _('Current KPIs') }}</h6>
+                                    </div>
+                                    <div class="list-group list-group-flush">
+                                        {% for kpi in kpis %}
+                                        <div class="list-group-item">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <h6 class="mb-1">{{ kpi.name }}</h6>
+                                                    <p class="mb-0 text-muted small">{{ kpi.description }}</p>
+                                                    {% if kpi.use_ai_evaluation %}
+                                                    <div class="mt-2 border-start border-primary ps-2">
+                                                        <span class="badge bg-primary">
+                                                            <i class="fas fa-robot me-1"></i> {{ _('AI Evaluation Enabled') }}
+                                                        </span>
+                                                        {% if kpi.ai_evaluation_criteria %}
+                                                        <div class="mt-1">
+                                                            <button class="btn btn-sm btn-outline-info" type="button" 
+                                                                    data-bs-toggle="collapse" 
+                                                                    data-bs-target="#criteria-{{ kpi.id }}" 
+                                                                    aria-expanded="false">
+                                                                <i class="fas fa-eye me-1"></i>{{ _('View Criteria') }}
+                                                            </button>
+                                                            <div class="collapse mt-2" id="criteria-{{ kpi.id }}">
+                                                                <div class="card card-body bg-dark border-primary">
+                                                                    <p class="text-light small mb-0">
+                                                                        {{ kpi.ai_evaluation_criteria }}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="btn-group">
+                                                    <button type="button" onclick="editKPI({{ kpi.id }}, `{{ kpi.name }}`, `{{ kpi.description }}`, {% if kpi.use_ai_evaluation %}true{% else %}false{% endif %}, `{{ kpi.ai_evaluation_criteria or '' }}`)" class="btn btn-primary me-1">
+                                                        <i class="fas fa-edit"></i> {{ _('Edit') }}
+                                                    </button>
+                                                    <form method="POST" action="{{ url_for('main.delete_kpi', kpi_id=kpi.id) }}" class="d-inline">
+                                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                        <button type="submit" class="btn btn-danger" onclick="return confirm('{{ _('Are you sure you want to delete this KPI?') }}')">
+                                                            <i class="fas fa-trash"></i> {{ _('Delete') }}
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                <!-- Yeni KPI Ekleme Formu -->
+                                <div class="card">
+                                    <div class="card-header bg-success text-white">
+                                        <h6 class="mb-0" id="kpi_form_title">{{ _('Add New KPI') }}</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label class="form-label">{{ _('KPI Name') }}</label>
+                                            <input type="text" id="kpi_name" class="form-control">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label">{{ _('KPI Description') }}</label>
+                                            <textarea id="kpi_description" class="form-control" rows="2"></textarea>
+                                        </div>
+                                        
+                                        <!-- AI Değerlendirme Alanları -->
+                                        <div class="mb-3 border p-3 rounded bg-dark text-light">
+                                            <h6 class="border-bottom pb-2 text-primary">
+                                                <i class="fas fa-robot me-2"></i>{{ _('AI Evaluation Settings') }}
+                                            </h6>
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" id="use_ai_evaluation">
+                                                <label class="form-check-label" for="use_ai_evaluation">
+                                                    {{ _('Enable AI Evaluation for this KPI') }}
+                                                </label>
+                                            </div>
+                                            
+                                            <div id="ai_evaluation_fields" class="mt-3">
+                                                <label class="form-label text-info">{{ _('AI Evaluation Criteria') }}</label>
+                                                <textarea id="ai_evaluation_criteria" class="form-control bg-dark text-light border-secondary" rows="4" 
+                                                    placeholder="{{ _('Provide specific instructions for evaluating uploaded documents...') }}"></textarea>
+                                                <small class="form-text text-muted mt-2">
+                                                    <i class="fas fa-info-circle me-1"></i>{{ _('Detail the specific criteria for evaluating this KPI. This helps the AI understand how to score uploaded documents.') }}
+                                                </small>
+                                            </div>
+                                        </div>
+                                        
+                                        <input type="hidden" id="kpi_id" value="">
+                                        
+                                        <div class="text-end">
+                                            <button type="button" id="kpi_cancel_btn" onclick="cancelEdit()" class="btn btn-secondary d-none me-2">
+                                                <i class="fas fa-times me-1"></i> {{ _('Cancel') }}
+                                            </button>
+                                            <button type="button" id="kpi_save_btn" onclick="saveKPI()" class="btn btn-primary d-none">
+                                                <i class="fas fa-save me-1"></i> {{ _('Update KPI') }}
+                                            </button>
+                                            <button type="button" id="kpi_add_btn" onclick="addKPI()" class="btn btn-success">
+                                                <i class="fas fa-plus me-1"></i> {{ _('Add KPI') }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('main.admin_criteria') }}" 
+                               class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>{{ _('Back to Criteria') }}
+                            </a>
+                            <button type="button" class="btn btn-primary" id="manual-submit">
+                                <i class="fas fa-save me-2"></i>{{ _('Update Sub-criterion') }}
+                            </button>
+                        </div>
+                        
+                        <script>
+                            // Form gönderimini yakalamak için JavaScript
+                            document.addEventListener('DOMContentLoaded', function() {
+                                // Manuel gönderim için buton
+                                document.getElementById('manual-submit').addEventListener('click', function() {
+                                    console.log('Manuel form gönderimi başlatılıyor');
+                                    
+                                    // Form verilerini yeni form içinde gönder
+                                    const form = document.getElementById('subcriterion-form');
+                                    const formData = new FormData(form);
+                                    
+                                    // Form verilerini kontrol et
+                                    let formValues = {};
+                                    for(let pair of formData.entries()) {
+                                        formValues[pair[0]] = pair[1];
+                                    }
+                                    console.log('Form values:', formValues);
+                                    
+                                    // XMLHttpRequest ile gönder
+                                    const xhr = new XMLHttpRequest();
+                                    xhr.open('POST', form.action, true);
+                                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                                    xhr.onload = function() {
+                                        console.log('XHR tamamlandı, durum:', xhr.status);
+                                        if (xhr.status === 200) {
+                                            console.log('Yanıt:', xhr.responseText);
+                                            window.location.href = "{{ url_for('main.admin_criteria') }}";
+                                        } else {
+                                            alert('Güncelleme başarısız. Hata kodu: ' + xhr.status);
+                                        }
+                                    };
+                                    
+                                    // FormData'yı URL encoded parametrelere dönüştür
+                                    let params = [];
+                                    for (let [key, value] of formData.entries()) {
+                                        params.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+                                    }
+                                    
+                                    xhr.send(params.join('&'));
+                                });
+
+                                // Normal form gönderim eventi
+                                document.getElementById('subcriterion-form').addEventListener('submit', function(e) {
+                                    console.log('Form submitted!');
+                                    
+                                    // Form verilerini kontrol et
+                                    const formData = new FormData(this);
+                                    let formValues = {};
+                                    for(let pair of formData.entries()) {
+                                        formValues[pair[0]] = pair[1];
+                                    }
+                                    
+                                    console.log('Form values:', formValues);
+                                });
+                            });
+                            
+                            function toggleKpiFields(show) {
+                                const kpiFields = document.getElementById('kpi_fields');
+                                if (show) {
+                                    kpiFields.classList.remove('d-none');
+                                } else {
+                                    kpiFields.classList.add('d-none');
+                                }
+                            }
+                            
+                            function addKPI() {
+                                const name = document.getElementById('kpi_name').value;
+                                const description = document.getElementById('kpi_description').value;
+                                const useAiEvaluation = document.getElementById('use_ai_evaluation').checked;
+                                const aiEvaluationCriteria = document.getElementById('ai_evaluation_criteria').value;
+                                
+                                if (!name) {
+                                    alert("{{ _('KPI name is required') }}");
+                                    return;
+                                }
+                                
+                                // Create a form to submit the KPI data
+                                const form = document.createElement('form');
+                                form.method = 'POST';
+                                form.action = "{{ url_for('main.add_kpi', subcriterion_id=subcriterion.id) }}";
+                                
+                                // Add CSRF token
+                                const csrfToken = document.createElement('input');
+                                csrfToken.type = 'hidden';
+                                csrfToken.name = 'csrf_token';
+                                csrfToken.value = "{{ csrf_token() }}";
+                                form.appendChild(csrfToken);
+                                
+                                // Add name field
+                                const nameField = document.createElement('input');
+                                nameField.type = 'hidden';
+                                nameField.name = 'name';
+                                nameField.value = name;
+                                form.appendChild(nameField);
+                                
+                                // Add description field
+                                const descField = document.createElement('input');
+                                descField.type = 'hidden';
+                                descField.name = 'description';
+                                descField.value = description;
+                                form.appendChild(descField);
+                                
+                                // Add AI evaluation fields
+                                if (useAiEvaluation) {
+                                    const useAiField = document.createElement('input');
+                                    useAiField.type = 'hidden';
+                                    useAiField.name = 'use_ai_evaluation';
+                                    useAiField.value = 'on';
+                                    form.appendChild(useAiField);
+                                }
+                                
+                                const aiCriteriaField = document.createElement('input');
+                                aiCriteriaField.type = 'hidden';
+                                aiCriteriaField.name = 'ai_evaluation_criteria';
+                                aiCriteriaField.value = aiEvaluationCriteria;
+                                form.appendChild(aiCriteriaField);
+                                
+                                // Append form to body and submit
+                                document.body.appendChild(form);
+                                form.submit();
+                            }
+                            
+                            function editKPI(id, name, description, useAiEvaluation, aiCriteria) {
+                                // Fill form with KPI data
+                                document.getElementById('kpi_id').value = id;
+                                document.getElementById('kpi_name').value = name;
+                                document.getElementById('kpi_description').value = description;
+                                
+                                // Set AI evaluation fields if available
+                                if (typeof useAiEvaluation !== 'undefined') {
+                                    document.getElementById('use_ai_evaluation').checked = useAiEvaluation;
+                                }
+                                if (typeof aiCriteria !== 'undefined') {
+                                    document.getElementById('ai_evaluation_criteria').value = aiCriteria;
+                                }
+                                
+                                // Update UI to show edit mode
+                                document.getElementById('kpi_form_title').innerHTML = "{{ _('Edit KPI') }}";
+                                document.getElementById('kpi_add_btn').classList.add('d-none');
+                                document.getElementById('kpi_save_btn').classList.remove('d-none');
+                                document.getElementById('kpi_cancel_btn').classList.remove('d-none');
+                                
+                                // Scroll to form
+                                document.getElementById('kpi_form_title').scrollIntoView();
+                            }
+                            
+                            function saveKPI() {
+                                const id = document.getElementById('kpi_id').value;
+                                const name = document.getElementById('kpi_name').value;
+                                const description = document.getElementById('kpi_description').value;
+                                const useAiEvaluation = document.getElementById('use_ai_evaluation').checked;
+                                const aiEvaluationCriteria = document.getElementById('ai_evaluation_criteria').value;
+                                
+                                if (!name) {
+                                    alert("{{ _('KPI name is required') }}");
+                                    return;
+                                }
+                                
+                                // Create a form to submit the updated KPI data
+                                const form = document.createElement('form');
+                                form.method = 'POST';
+                                form.action = "/kpi/" + id + "/edit";
+                                
+                                // Add CSRF token
+                                const csrfToken = document.createElement('input');
+                                csrfToken.type = 'hidden';
+                                csrfToken.name = 'csrf_token';
+                                csrfToken.value = "{{ csrf_token() }}";
+                                form.appendChild(csrfToken);
+                                
+                                // Add name field
+                                const nameField = document.createElement('input');
+                                nameField.type = 'hidden';
+                                nameField.name = 'name';
+                                nameField.value = name;
+                                form.appendChild(nameField);
+                                
+                                // Add description field
+                                const descField = document.createElement('input');
+                                descField.type = 'hidden';
+                                descField.name = 'description';
+                                descField.value = description;
+                                form.appendChild(descField);
+                                
+                                // Add AI evaluation fields
+                                if (useAiEvaluation) {
+                                    const useAiField = document.createElement('input');
+                                    useAiField.type = 'hidden';
+                                    useAiField.name = 'use_ai_evaluation';
+                                    useAiField.value = 'on';
+                                    form.appendChild(useAiField);
+                                }
+                                
+                                const aiCriteriaField = document.createElement('input');
+                                aiCriteriaField.type = 'hidden';
+                                aiCriteriaField.name = 'ai_evaluation_criteria';
+                                aiCriteriaField.value = aiEvaluationCriteria;
+                                form.appendChild(aiCriteriaField);
+                                
+                                // Append form to body and submit
+                                document.body.appendChild(form);
+                                form.submit();
+                            }
+                            
+                            function cancelEdit() {
+                                // Clear form
+                                document.getElementById('kpi_id').value = '';
+                                document.getElementById('kpi_name').value = '';
+                                document.getElementById('kpi_description').value = '';
+                                
+                                // Reset UI
+                                document.getElementById('kpi_form_title').innerHTML = "{{ _('Add New KPI') }}";
+                                document.getElementById('kpi_add_btn').classList.remove('d-none');
+                                document.getElementById('kpi_save_btn').classList.add('d-none');
+                                document.getElementById('kpi_cancel_btn').classList.add('d-none');
+                            }
+                        </script>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
