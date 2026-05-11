@@ -1,0 +1,34 @@
+{pkgs}: {
+  deps = [
+    pkgs.libgcc
+    pkgs.autoconf
+    pkgs.binutils
+    pkgs.gnumake
+    pkgs.libcxx
+    pkgs.gcc-unwrapped
+    pkgs.libstdcxx5
+    pkgs.glibc
+    pkgs.gcc
+    pkgs.tk
+    pkgs.tcl
+    pkgs.qhull
+    pkgs.pkg-config
+    pkgs.gtk3
+    pkgs.gobject-introspection
+    pkgs.freetype
+    pkgs.ffmpeg-full
+    pkgs.zlib
+    pkgs.libxslt
+    pkgs.libxml2
+    pkgs.gdk-pixbuf
+    pkgs.cairo
+    pkgs.pango
+    pkgs.harfbuzz
+    pkgs.glib
+    pkgs.ghostscript
+    pkgs.fontconfig
+    pkgs.glibcLocales
+    pkgs.postgresql
+    pkgs.openssl
+  ];
+}
