@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Application Details</h4>
+                    <div class="badge bg-{{ application.status.value == 'pending' and 'warning' or (application.status.value == 'accepted' and 'success' or 'danger') }}">
+                        {{ application.status.value|upper }}
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h5>Project Information</h5>
+                    <p><strong>Project:</strong> {{ application.project.name }}</p>
+                    <p><strong>Description:</strong> {{ application.project.description }}</p>
+
+                    <hr>
+
+                    <h5>Contractor Information</h5>
+                    <p><strong>Name:</strong> {{ application.contractor.username }}</p>
+                    <p><strong>Email:</strong> {{ application.contractor.email }}</p>
+                    <p><strong>Specialization:</strong> {{ application.contractor.contractor_specialization }}</p>
+                    <p><strong>Experience:</strong> {{ application.contractor.contractor_experience }} years</p>
+
+                    <hr>
+
+                    <h5>Application Details</h5>
+                    <p><strong>Cover Letter:</strong></p>
+                    <div class="mb-3">
+                        {{ application.cover_letter|safe }}
+                    </div>
+                    <p><strong>Proposed Duration:</strong> {{ application.proposed_duration }} days</p>
+                    <p><strong>Proposed Budget:</strong> ${{ "%.2f"|format(application.proposed_budget) }}</p>
+                    <p><strong>Submitted:</strong> {{ application.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+
+                    {% if application.documents %}
+                    <hr>
+                    <h5>Attached Documents</h5>
+                    <ul class="list-group">
+                        {% for doc in application.documents %}
+                        <li class="list-group-item">
+                            <a href="{{ url_for('static', filename=doc.file_path) }}" target="_blank">
+                                {{ doc.filename }}
+                            </a>
+                            <span class="text-muted">({{ doc.file_type|upper }})</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                    {% if application.status.value == 'pending' %}
+                    <hr>
+                    <div class="d-flex gap-2">
+                        <form action="{{ url_for('main.accept_application', application_id=application.id) }}" method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-success">Accept Application</button>
+                        </form>
+                        <form action="{{ url_for('main.reject_application', application_id=application.id) }}" method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-danger">Reject Application</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
