@@ -1,0 +1,1600 @@
+# Translations template for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-06-17 20:35+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: auth.py:39 auth.py:70
+msgid "Kayıt başarılı! Lütfen giriş yapın."
+msgstr ""
+
+#: auth.py:45 auth.py:76
+msgid "Kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin."
+msgstr ""
+
+#: auth.py:97
+msgid "Giriş başarılı!"
+msgstr ""
+
+#: auth.py:102
+msgid "Seçilen rol bu hesap için geçersiz."
+msgstr ""
+
+#: auth.py:105 auth.py:108
+msgid "Geçersiz email veya şifre."
+msgstr ""
+
+#: auth.py:112
+msgid "Giriş yapılırken bir hata oluştu. Lütfen tekrar deneyin."
+msgstr ""
+
+#: auth.py:120
+msgid "Başarıyla çıkış yaptınız."
+msgstr ""
+
+#: auth.py:138 auth.py:147
+msgid "Şifre sıfırlama talimatları email adresinize gönderildi."
+msgstr ""
+
+#: auth.py:141
+msgid "Email gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin."
+msgstr ""
+
+#: auth.py:145
+msgid "Bir hata oluştu. Lütfen daha sonra tekrar deneyin."
+msgstr ""
+
+#: auth.py:164 auth.py:189
+msgid "Geçersiz şifre sıfırlama linki."
+msgstr ""
+
+#: auth.py:172
+msgid "Lütfen tüm alanları doldurun."
+msgstr ""
+
+#: auth.py:174
+msgid "Şifreler eşleşmiyor."
+msgstr ""
+
+#: auth.py:178
+msgid "Şifreniz başarıyla güncellendi. Lütfen yeni şifrenizle giriş yapın."
+msgstr ""
+
+#: auth.py:185
+msgid "Şifre sıfırlama linkinin süresi dolmuş."
+msgstr ""
+
+#: forms.py:14 forms.py:32 forms.py:66
+#: templates/profile/company_profile.html:22
+msgid "Email"
+msgstr ""
+
+#: forms.py:16 forms.py:34 forms.py:68
+msgid "Please enter a valid email address"
+msgstr ""
+
+#: forms.py:18 forms.py:36 forms.py:70 templates/admin/auth/login.html:29
+#: templates/admin_login/login.html:29
+msgid "Password"
+msgstr ""
+
+#: forms.py:21
+msgid "Login Type"
+msgstr ""
+
+#: forms.py:22
+msgid "As Owner"
+msgstr ""
+
+#: forms.py:23
+msgid "As Contractor"
+msgstr ""
+
+#: forms.py:25 templates/auth/login.html:9 templates/base.html:102
+msgid "Login"
+msgstr ""
+
+#: forms.py:28 forms.py:62 templates/admin/auth/login.html:25
+#: templates/admin_login/login.html:25
+msgid "Username"
+msgstr ""
+
+#: forms.py:30 forms.py:64
+msgid "Username must be between 2 and 20 characters"
+msgstr ""
+
+#: forms.py:38 forms.py:72
+msgid "Password must be at least 6 characters long"
+msgstr ""
+
+#: forms.py:40 forms.py:74
+msgid "Confirm Password"
+msgstr ""
+
+#: forms.py:42 forms.py:76
+msgid "Passwords must match"
+msgstr ""
+
+#: forms.py:44 forms.py:132 templates/profile/company_profile.html:18
+msgid "Owner Name"
+msgstr ""
+
+#: forms.py:48 forms.py:136
+msgid "Owner Description"
+msgstr ""
+
+#: forms.py:49 templates/auth/login.html:52 templates/base.html:109
+msgid "Register as Owner"
+msgstr ""
+
+#: forms.py:54 forms.py:91
+msgid "Email already registered. Please choose a different one."
+msgstr ""
+
+#: forms.py:59 forms.py:96
+msgid "Username already taken. Please choose a different one."
+msgstr ""
+
+#: forms.py:78
+msgid "Specialization"
+msgstr ""
+
+#: forms.py:82
+msgid "Years of Experience"
+msgstr ""
+
+#: forms.py:86 templates/auth/login.html:53 templates/base.html:110
+msgid "Register as Contractor"
+msgstr ""
+
+#: forms.py:99 templates/profile/company_profile.html:55
+msgid "Project Name"
+msgstr ""
+
+#: forms.py:100
+msgid "Project name is required"
+msgstr ""
+
+#: forms.py:101
+msgid "Name must be between 2 and 100 characters"
+msgstr ""
+
+#: forms.py:103
+msgid "Project Description"
+msgstr ""
+
+#: forms.py:104
+msgid "Project Expectations"
+msgstr ""
+
+#: forms.py:105
+msgid "Please describe your project expectations"
+msgstr ""
+
+#: forms.py:107
+msgid "Project Start Date"
+msgstr ""
+
+#: forms.py:109
+msgid "Please set a project start date"
+msgstr ""
+
+#: forms.py:111
+msgid "Project Deadline"
+msgstr ""
+
+#: forms.py:113
+msgid "Please set a project deadline"
+msgstr ""
+
+#: forms.py:115
+msgid "Project Location"
+msgstr ""
+
+#: forms.py:119
+msgid "Create Project"
+msgstr ""
+
+#: forms.py:123
+msgid "Start date must be in the future"
+msgstr ""
+
+#: forms.py:127
+msgid "Deadline must be in the future"
+msgstr ""
+
+#: forms.py:129
+msgid "Deadline must be after the start date"
+msgstr ""
+
+#: forms.py:137
+msgid "Update Profile"
+msgstr ""
+
+#: forms.py:140 templates/application_view.html:72
+msgid "Cover Letter"
+msgstr ""
+
+#: forms.py:141
+msgid "Cover letter must be at most 5000 characters"
+msgstr ""
+
+#: forms.py:143 templates/project_application.html:263
+msgid "Submit Application"
+msgstr ""
+
+#: forms.py:144
+msgid "Save as Draft"
+msgstr ""
+
+#: forms.py:151
+msgid "Sub-criterion Name"
+msgstr ""
+
+#: forms.py:155 templates/admin/criteria.html:63
+#: templates/admin/criterion_form.html:24 templates/admin/index.html:114
+#: templates/criterion_edit.html:20 templates/project_view.html:29
+#: templates/subcriterion_edit.html:26
+msgid "Description"
+msgstr ""
+
+#: forms.py:156 templates/admin/criteria.html:52
+#: templates/admin/criteria.html:64 templates/admin/criterion_form.html:33
+#: templates/admin/index.html:115 templates/criterion_edit.html:24
+#: templates/criterion_edit.html:61 templates/subcriterion_edit.html:35
+msgid "Weight"
+msgstr ""
+
+#: forms.py:158 templates/admin/sub_criterion_form.html:50
+#: templates/subcriterion_edit.html:43
+msgid "Weight must be between 0 and 1"
+msgstr ""
+
+#: forms.py:160 templates/reports/criterion_groups_topsis.html:85
+#: templates/reports/criterion_groups_topsis.html:107
+#: templates/subcriterion_edit.html:48
+msgid "Detay Ağırlık"
+msgstr ""
+
+#: forms.py:162 templates/subcriterion_edit.html:56
+msgid "Detay ağırlık 0 ile 10 arasında olmalıdır"
+msgstr ""
+
+#: forms.py:166
+msgid "Define KPI for this Sub-criterion"
+msgstr ""
+
+#: forms.py:168 templates/subcriterion_edit.html:194
+msgid "Update Sub-criterion"
+msgstr ""
+
+#: forms.py:182
+msgid "A sub-criterion with this name already exists for this criterion"
+msgstr ""
+
+#: forms.py:186 templates/subcriterion_edit.html:139
+msgid "KPI Name"
+msgstr ""
+
+#: forms.py:190 templates/subcriterion_edit.html:144
+msgid "KPI Description"
+msgstr ""
+
+#: forms.py:193
+msgid "Enable AI Evaluation"
+msgstr ""
+
+#: forms.py:194 templates/subcriterion_edit.html:161
+msgid "AI Evaluation Criteria"
+msgstr ""
+
+#: forms.py:195 templates/subcriterion_edit.html:165
+msgid ""
+"Detail the specific criteria for evaluating this KPI. This helps the AI "
+"understand how to score uploaded documents."
+msgstr ""
+
+#: forms.py:197 templates/subcriterion_edit.html:180
+msgid "Add KPI"
+msgstr ""
+
+#: forms.py:205
+msgid "Submit"
+msgstr ""
+
+#: reports.py:25 reports.py:114 routes.py:115
+msgid "Bu sayfaya erişim yetkiniz yok."
+msgstr ""
+
+#: reports.py:34 reports.py:123 routes.py:124
+msgid "En az 2 başvuru olması gerekmektedir."
+msgstr ""
+
+#: reports.py:262
+#, python-brace-format
+msgid "PDF oluşturulurken bir hata oluştu: {error}"
+msgstr ""
+
+#: routes.py:31
+msgid "Language updated successfully."
+msgstr ""
+
+#: routes.py:215
+msgid "Project created successfully!"
+msgstr ""
+
+#: routes.py:221
+#, python-brace-format
+msgid "Error creating project: {error}"
+msgstr ""
+
+#: routes.py:232 routes.py:643 routes.py:653 routes.py:673 routes.py:873
+#: routes.py:930 routes.py:946 routes.py:959 routes.py:984 routes.py:1003
+#: routes.py:1078 routes.py:1134 routes.py:1178 routes.py:1591 routes.py:1719
+#: routes.py:1814 routes.py:2063
+msgid "Access denied."
+msgstr ""
+
+#: routes.py:424
+msgid "Profile updated successfully!"
+msgstr ""
+
+#: routes.py:429
+msgid "An error occurred while updating your profile."
+msgstr ""
+
+#: routes.py:437
+msgid "Only contractors can apply to projects."
+msgstr ""
+
+#: routes.py:445
+msgid "This project is no longer accepting applications."
+msgstr ""
+
+#: routes.py:455
+msgid "You have already applied to this project."
+msgstr ""
+
+#: routes.py:486
+msgid "Application saved as draft successfully!"
+msgstr ""
+
+#: routes.py:489
+msgid "Application submitted successfully!"
+msgstr ""
+
+#: routes.py:631
+msgid ""
+"There was an error processing your application criteria. Please try again"
+" or contact support if the issue persists."
+msgstr ""
+
+#: routes.py:633
+#, python-brace-format
+msgid ""
+"Error submitting application. Please check all fields and try again. "
+"Error: {error}"
+msgstr ""
+
+#: routes.py:679
+msgid "Form submitted incorrectly. Please try again."
+msgstr ""
+
+#: routes.py:708
+msgid "KPI Scores must be between 1 and 7."
+msgstr ""
+
+#: routes.py:815
+msgid "Scores must be between 1 and 7."
+msgstr ""
+
+#: routes.py:838
+msgid "Scores updated successfully!"
+msgstr ""
+
+#: routes.py:860
+msgid "Error updating scores. Please try again."
+msgstr ""
+
+#: routes.py:935
+msgid "Application accepted successfully!"
+msgstr ""
+
+#: routes.py:951
+msgid "Application rejected successfully!"
+msgstr ""
+
+#: routes.py:971
+msgid "Criterion and its sub-criteria deleted successfully!"
+msgstr ""
+
+#: routes.py:975
+#, python-brace-format
+msgid "Error deleting criterion: {error}"
+msgstr ""
+
+#: routes.py:1053
+msgid "Sub-criterion updated successfully!"
+msgstr ""
+
+#: routes.py:1061
+msgid "An error occurred while updating sub-criterion."
+msgstr ""
+
+#: routes.py:1096 routes.py:1152
+msgid "KPI name is required."
+msgstr ""
+
+#: routes.py:1117
+msgid "KPI added successfully!"
+msgstr ""
+
+#: routes.py:1122
+msgid "An error occurred while adding KPI."
+msgstr ""
+
+#: routes.py:1164
+msgid "KPI updated successfully!"
+msgstr ""
+
+#: routes.py:1169
+msgid "An error occurred while updating KPI."
+msgstr ""
+
+#: routes.py:1194
+msgid "KPI deleted successfully!"
+msgstr ""
+
+#: routes.py:1198
+msgid "An error occurred while deleting KPI."
+msgstr ""
+
+#: routes.py:1212
+msgid "Access denied. Company or administrator privileges required."
+msgstr ""
+
+#: routes.py:1219
+msgid "No criterion groups defined."
+msgstr ""
+
+#: routes.py:1303
+msgid "No applications found for selected project."
+msgstr ""
+
+#: routes.py:1311 routes.py:1607
+msgid "No criteria defined for TOPSIS calculation."
+msgstr ""
+
+#: routes.py:1600
+msgid "At least 3 applications are required for TOPSIS calculation."
+msgstr ""
+
+#: routes.py:1639
+#, python-brace-format
+msgid "Application {application} is missing scores for some criteria."
+msgstr ""
+
+#: routes.py:1695
+msgid "TOPSIS scores calculated successfully for all applications!"
+msgstr ""
+
+#: routes.py:1702 routes.py:1709
+#, python-brace-format
+msgid "Error calculating TOPSIS scores: {error}"
+msgstr ""
+
+#: routes.py:1818
+msgid "Only pending applications can be edited."
+msgstr ""
+
+#: routes.py:2029
+msgid "Application updated successfully!"
+msgstr ""
+
+#: routes.py:2035
+msgid "Error updating application. Please try again."
+msgstr ""
+
+#: routes.py:2067
+msgid "Only pending applications can be deleted."
+msgstr ""
+
+#: routes.py:2094
+msgid "Application deleted successfully."
+msgstr ""
+
+#: routes.py:2099
+msgid "Error deleting application. Please try again."
+msgstr ""
+
+#: templates/application_view.html:8 templates/project_application.html:17
+msgid "Application Details"
+msgstr ""
+
+#: templates/application_view.html:17
+msgid "Approve"
+msgstr ""
+
+#: templates/admin/project_applications.html:76
+#: templates/application_view.html:26
+msgid "Reject"
+msgstr ""
+
+#: templates/application_view.html:33
+msgid "Back to Project"
+msgstr ""
+
+#: templates/application_view.html:40
+msgid "Application Information"
+msgstr ""
+
+#: templates/admin/project_applications.html:26
+#: templates/application_view.html:45 templates/my_applications.html:19
+#: templates/project_form.html:9 templates/project_form.html:79
+#: templates/reports/contractor_performance.html:127
+msgid "Project"
+msgstr ""
+
+#: templates/admin/project_applications.html:27
+#: templates/application_view.html:46 templates/project_view.html:57
+#: templates/reports/topsis_comparison.html:91
+#: templates/reports/topsis_comparison.html:145
+#: templates/reports/topsis_comparison.html:195
+#: templates/reports/topsis_pdf_report.html:143
+#: templates/reports/topsis_pdf_report.html:180
+#: templates/reports/topsis_pdf_report.html:216
+msgid "Contractor"
+msgstr ""
+
+#: templates/admin/project_applications.html:30
+#: templates/application_view.html:47 templates/my_applications.html:20
+#: templates/profile/company_profile.html:57 templates/project_view.html:58
+#: templates/project_view.html:133
+#: templates/reports/contractor_performance.html:128
+msgid "Status"
+msgstr ""
+
+#: templates/admin/project_applications.html:31
+#: templates/application_view.html:55 templates/my_applications.html:22
+msgid "Submitted"
+msgstr ""
+
+#: templates/application_view.html:58
+msgid "Proposed Duration"
+msgstr ""
+
+#: templates/admin/project_applications.html:46
+#: templates/application_view.html:58
+msgid "days"
+msgstr ""
+
+#: templates/admin/project_applications.html:28
+#: templates/application_view.html:59
+msgid "Proposed Budget"
+msgstr ""
+
+#: templates/application_view.html:60 templates/my_applications.html:21
+#: templates/reports/contractor_performance.html:129
+msgid "TOPSIS Score"
+msgstr ""
+
+#: templates/application_view.html:64
+msgid "Not evaluated"
+msgstr ""
+
+#: templates/application_view.html:84
+msgid "Criterion Evaluations and Documents"
+msgstr ""
+
+#: templates/application_view.html:115
+msgid "No documents uploaded for this criterion"
+msgstr ""
+
+#: templates/application_view.html:146 templates/application_view.html:454
+msgid "Auto-calculated from KPI scores"
+msgstr ""
+
+#: templates/application_view.html:148 templates/application_view.html:476
+msgid "Will be calculated from KPI scores"
+msgstr ""
+
+#: templates/application_view.html:155
+msgid "Select Score"
+msgstr ""
+
+#: templates/application_view.html:165 templates/application_view.html:265
+#: templates/application_view.html:301 templates/project_view.html:59
+msgid "Score"
+msgstr ""
+
+#: templates/application_view.html:187
+msgid "No documents uploaded for this sub-criterion"
+msgstr ""
+
+#: templates/application_view.html:195
+msgid "Performance Indicators"
+msgstr ""
+
+#: templates/application_view.html:223
+msgid "AI Score"
+msgstr ""
+
+#: templates/application_view.html:228
+msgid "View AI Analysis"
+msgstr ""
+
+#: templates/application_view.html:233
+msgid "AI Evaluation Result"
+msgstr ""
+
+#: templates/application_view.html:241
+msgid "Pending AI Evaluation"
+msgstr ""
+
+#: templates/application_view.html:244
+msgid "The document will be evaluated when the AI service processes the queue."
+msgstr ""
+
+#: templates/application_view.html:252
+msgid "No documents uploaded for this KPI"
+msgstr ""
+
+#: templates/application_view.html:259
+msgid "KPI Score"
+msgstr ""
+
+#: templates/application_view.html:321
+msgid "Save Scores"
+msgstr ""
+
+#: templates/base.html:6 templates/base.html:122
+msgid "Smart Construction Decision Through Circular Economy"
+msgstr ""
+
+#: templates/base.html:60 templates/reports/criterion_groups_topsis.html:49
+msgid "Dashboard"
+msgstr ""
+
+#: templates/base.html:64
+msgid "Admin Panel"
+msgstr ""
+
+#: templates/admin/criteria.html:8 templates/base.html:67
+msgid "Manage Criteria"
+msgstr ""
+
+#: templates/base.html:72 templates/my_applications.html:8
+msgid "My Applications"
+msgstr ""
+
+#: templates/base.html:75
+msgid "Performance Report"
+msgstr ""
+
+#: templates/base.html:83
+msgid "Language"
+msgstr ""
+
+#: templates/base.html:98
+msgid "Logout"
+msgstr ""
+
+#: templates/base.html:106
+msgid "Register"
+msgstr ""
+
+#: templates/base.html:121
+msgid "Smart Construction Decision Through Circular Economy Logo"
+msgstr ""
+
+#: templates/base.html:123
+msgid ""
+"A next-generation web-based platform that combines circular economy "
+"principles with AI-powered decision models to evaluate and prequalify "
+"construction contractors."
+msgstr ""
+
+#: templates/base.html:148
+msgid "All rights reserved."
+msgstr ""
+
+#: templates/base.html:149
+msgid ""
+"This platform was developed as part of a Ph.D. research at Yıldız "
+"Technical University and supported by TÜBİTAK (The Scientific and "
+"Technological Research Council of Turkey)."
+msgstr ""
+
+#: templates/admin/criterion_form.html:9 templates/admin/index.html:99
+#: templates/criterion_edit.html:9
+msgid "Edit Criterion"
+msgstr ""
+
+#: templates/admin/criteria.html:62 templates/admin/criterion_form.html:19
+#: templates/admin/index.html:113 templates/criterion_edit.html:15
+#: templates/subcriterion_edit.html:21
+msgid "Name"
+msgstr ""
+
+#: templates/admin/criterion_form.html:57 templates/criterion_edit.html:32
+msgid "Is Cost Criterion"
+msgstr ""
+
+#: templates/admin/criterion_form.html:67 templates/criterion_edit.html:38
+#: templates/criterion_edit.html:40
+#: templates/profile/edit_company_profile.html:33
+#: templates/project_application.html:255 templates/project_form.html:77
+#: templates/subcriterion_edit.html:174
+msgid "Cancel"
+msgstr ""
+
+#: templates/criterion_edit.html:42
+msgid "Update Criterion"
+msgstr ""
+
+#: templates/admin/criteria.html:31 templates/admin/index.html:103
+#: templates/criterion_edit.html:45
+msgid "Add Sub-criterion"
+msgstr ""
+
+#: templates/criterion_edit.html:52
+msgid "Sub-criteria"
+msgstr ""
+
+#: templates/admin/criteria.html:27 templates/admin/criteria.html:89
+#: templates/admin/index.html:129 templates/criterion_edit.html:66
+#: templates/dashboard.html:40 templates/my_applications.html:59
+#: templates/project_form.html:9 templates/subcriterion_edit.html:116
+msgid "Edit"
+msgstr ""
+
+#: templates/admin/criteria.html:108 templates/criterion_edit.html:74
+msgid "No sub-criteria added yet."
+msgstr ""
+
+#: templates/dashboard.html:8
+msgid "Welcome"
+msgstr ""
+
+#: templates/dashboard.html:11
+msgid "New Project"
+msgstr ""
+
+#: templates/dashboard.html:29
+msgid "Location"
+msgstr ""
+
+#: templates/dashboard.html:30 templates/project_view.html:128
+msgid "Deadline"
+msgstr ""
+
+#: templates/dashboard.html:31 templates/project_view.html:125
+msgid "Created"
+msgstr ""
+
+#: templates/dashboard.html:38 templates/dashboard.html:45
+#: templates/my_applications.html:54 templates/project_view.html:85
+msgid "View details"
+msgstr ""
+
+#: templates/admin/criteria.html:38 templates/admin/criteria.html:96
+#: templates/admin/index.html:136 templates/dashboard.html:42
+#: templates/my_applications.html:66 templates/subcriterion_edit.html:121
+msgid "Delete"
+msgstr ""
+
+#: templates/dashboard.html:47
+msgid "Apply"
+msgstr ""
+
+#: templates/dashboard.html:58
+msgid ""
+"You haven't created any projects yet. Click the 'New Project' button to "
+"get started!"
+msgstr ""
+
+#: templates/dashboard.html:60
+msgid "No open projects available at the moment."
+msgstr ""
+
+#: templates/dashboard.html:71
+msgid "Are you sure you want to delete this project?"
+msgstr ""
+
+#: templates/my_applications.html:10 templates/project_view.html:21
+msgid "Back to Dashboard"
+msgstr ""
+
+#: templates/admin/criteria.html:66 templates/admin/index.html:116
+#: templates/admin/project_applications.html:32
+#: templates/my_applications.html:23 templates/profile/company_profile.html:58
+#: templates/project_view.html:60
+msgid "Actions"
+msgstr ""
+
+#: templates/my_applications.html:63
+msgid "Are you sure you want to delete this application?"
+msgstr ""
+
+#: templates/my_applications.html:79
+msgid "You have not submitted any applications yet."
+msgstr ""
+
+#: templates/project_application.html:9
+msgid "Edit Application"
+msgstr ""
+
+#: templates/project_application.html:9
+msgid "Apply for Project"
+msgstr ""
+
+#: templates/project_application.html:24
+msgid "Explain why you are the best fit for this project"
+msgstr ""
+
+#: templates/project_application.html:33
+msgid "Project Criteria"
+msgstr ""
+
+#: templates/project_application.html:35
+msgid "Select All"
+msgstr ""
+
+#: templates/project_application.html:70
+#: templates/reports/criterion_groups_topsis.html:27
+#: templates/reports/topsis_comparison.html:183
+#: templates/reports/topsis_pdf_report.html:209
+msgid "Alt Kriterler"
+msgstr ""
+
+#: templates/project_application.html:74
+msgid "Tümünü Göster/Gizle"
+msgstr ""
+
+#: templates/project_application.html:137
+msgid "Dosya Yükle"
+msgstr ""
+
+#: templates/project_application.html:152
+#: templates/project_application.html:214
+msgid "Current file"
+msgstr ""
+
+#: templates/project_application.html:162
+msgid "Supported formats: PDF, Word, Text"
+msgstr ""
+
+#: templates/project_application.html:172
+msgid "Performans Göstergeleri (KPI)"
+msgstr ""
+
+#: templates/project_application.html:199
+msgid "Kanıt Dokümanı Yükle"
+msgstr ""
+
+#: templates/project_application.html:224
+msgid "Upload evidence document for this KPI"
+msgstr ""
+
+#: templates/project_application.html:242
+msgid "No sub-criteria defined for this criterion."
+msgstr ""
+
+#: templates/project_application.html:263
+msgid "Save Changes"
+msgstr ""
+
+#: templates/project_form.html:9
+msgid "Create New"
+msgstr ""
+
+#: templates/project_form.html:17 templates/project_view.html:120
+msgid "Project Details"
+msgstr ""
+
+#: templates/project_form.html:38
+msgid ""
+"Detailed description of project requirements and expectations for "
+"contractors"
+msgstr ""
+
+#: templates/project_form.html:44
+msgid "Timeline and Location"
+msgstr ""
+
+#: templates/admin/criterion_form.html:70 templates/project_form.html:79
+msgid "Update"
+msgstr ""
+
+#: templates/admin/criterion_form.html:70 templates/project_form.html:79
+msgid "Create"
+msgstr ""
+
+#: templates/project_view.html:12
+msgid "Edit Project"
+msgstr ""
+
+#: templates/project_view.html:17
+msgid "Apply Now"
+msgstr ""
+
+#: templates/admin/project_applications.html:11 templates/project_view.html:40
+msgid "Applications"
+msgstr ""
+
+#: templates/project_view.html:45
+msgid "Calculate TOPSIS Scores"
+msgstr ""
+
+#: templates/project_view.html:98
+msgid "TOPSIS Raporu İndir (PDF)"
+msgstr ""
+
+#: templates/project_view.html:101
+#: templates/reports/criterion_groups_topsis.html:50
+msgid "Grup TOPSIS Analizi"
+msgstr ""
+
+#: templates/project_view.html:108
+msgid "Note: At least 3 applications are required to calculate TOPSIS scores."
+msgstr ""
+
+#: templates/project_view.html:112
+msgid "No applications received yet."
+msgstr ""
+
+#: templates/project_view.html:126
+msgid "Last Updated"
+msgstr ""
+
+#: templates/project_view.html:132
+msgid "Owner"
+msgstr ""
+
+#: templates/project_view.html:134
+msgid "Total Criteria"
+msgstr ""
+
+#: templates/admin/sub_criterion_form.html:9 templates/subcriterion_edit.html:9
+msgid "Edit Sub-criterion"
+msgstr ""
+
+#: templates/admin/sub_criterion_form.html:11
+#: templates/subcriterion_edit.html:11
+msgid "For criterion"
+msgstr ""
+
+#: templates/admin/criterion_form.html:17
+#: templates/admin/sub_criterion_form.html:20
+#: templates/subcriterion_edit.html:19
+msgid "Basic Information"
+msgstr ""
+
+#: templates/admin/criterion_form.html:31
+#: templates/admin/sub_criterion_form.html:39
+#: templates/subcriterion_edit.html:33
+msgid "Weight Setting"
+msgstr ""
+
+#: templates/admin/criterion_form.html:43
+#: templates/admin/sub_criterion_form.html:44
+#: templates/subcriterion_edit.html:40
+msgid "Overall Weight"
+msgstr ""
+
+#: templates/subcriterion_edit.html:53
+msgid "Detay Analiz Ağırlığı"
+msgstr ""
+
+#: templates/subcriterion_edit.html:63
+msgid "KPI Settings"
+msgstr ""
+
+#: templates/subcriterion_edit.html:64
+msgid "KPI settings are kept separate from the general TOPSIS calculation"
+msgstr ""
+
+#: templates/subcriterion_edit.html:71
+msgid "Define KPIs for this Sub-criterion"
+msgstr ""
+
+#: templates/subcriterion_edit.html:80
+msgid "Current KPIs"
+msgstr ""
+
+#: templates/subcriterion_edit.html:92
+msgid "AI Evaluation Enabled"
+msgstr ""
+
+#: templates/subcriterion_edit.html:100
+msgid "View Criteria"
+msgstr ""
+
+#: templates/subcriterion_edit.html:120
+msgid "Are you sure you want to delete this KPI?"
+msgstr ""
+
+#: templates/subcriterion_edit.html:135 templates/subcriterion_edit.html:409
+msgid "Add New KPI"
+msgstr ""
+
+#: templates/subcriterion_edit.html:151
+msgid "AI Evaluation Settings"
+msgstr ""
+
+#: templates/subcriterion_edit.html:156
+msgid "Enable AI Evaluation for this KPI"
+msgstr ""
+
+#: templates/subcriterion_edit.html:163
+msgid "Provide specific instructions for evaluating uploaded documents..."
+msgstr ""
+
+#: templates/subcriterion_edit.html:177
+msgid "Update KPI"
+msgstr ""
+
+#: templates/subcriterion_edit.html:191
+msgid "Back to Criteria"
+msgstr ""
+
+#: templates/subcriterion_edit.html:270 templates/subcriterion_edit.html:352
+msgid "KPI name is required"
+msgstr ""
+
+#: templates/subcriterion_edit.html:335
+msgid "Edit KPI"
+msgstr ""
+
+#: templates/admin/criteria.html:10 templates/admin/criterion_form.html:9
+#: templates/admin/index.html:18 templates/admin/index.html:52
+msgid "Add New Criterion"
+msgstr ""
+
+#: templates/admin/criteria.html:37
+msgid "Are you sure you want to delete this criterion?"
+msgstr ""
+
+#: templates/admin/criteria.html:46
+msgid "No description provided"
+msgstr ""
+
+#: templates/admin/criteria.html:49 templates/admin/index.html:78
+msgid "Cost"
+msgstr ""
+
+#: templates/admin/criteria.html:49 templates/admin/index.html:78
+msgid "Benefit"
+msgstr ""
+
+#: templates/admin/criteria.html:65
+msgid "KPI"
+msgstr ""
+
+#: templates/admin/criteria.html:73 templates/admin/index.html:123
+msgid "No description"
+msgstr ""
+
+#: templates/admin/criteria.html:79
+msgid "KPI Active"
+msgstr ""
+
+#: templates/admin/criteria.html:82
+msgid "No KPI"
+msgstr ""
+
+#: templates/admin/criteria.html:95 templates/admin/index.html:133
+msgid "Are you sure you want to delete this sub-criterion?"
+msgstr ""
+
+#: templates/admin/criteria.html:118 templates/admin/index.html:166
+msgid ""
+"No criteria defined yet. Click the \"Add New Criterion\" button to get "
+"started."
+msgstr ""
+
+#: templates/admin/criterion_form.html:46
+msgid "Enter a decimal value between 0 and 1 (e.g., 0.125, 0.500, etc.)"
+msgstr ""
+
+#: templates/admin/criterion_form.html:60
+msgid "Check if this is a cost criterion (lower values are better)"
+msgstr ""
+
+#: templates/admin/index.html:9
+msgid "Admin Dashboard"
+msgstr ""
+
+#: templates/admin/index.html:12 templates/admin/project_applications.html:7
+msgid "Project Applications"
+msgstr ""
+
+#: templates/admin/index.html:15
+msgid "Manage Users"
+msgstr ""
+
+#: templates/admin/index.html:50
+msgid "Criteria Management"
+msgstr ""
+
+#: templates/admin/index.html:84
+msgid "sub-criteria"
+msgstr ""
+
+#: templates/admin/index.html:154
+msgid "No sub-criteria defined yet."
+msgstr ""
+
+#: templates/admin/index.html:156
+msgid "Add your first sub-criterion"
+msgstr ""
+
+#: templates/admin/project_applications.html:10
+msgid "Admin"
+msgstr ""
+
+#: templates/admin/project_applications.html:29
+msgid "Duration"
+msgstr ""
+
+#: templates/admin/project_applications.html:61
+#: templates/profile/company_profile.html:72
+msgid "View"
+msgstr ""
+
+#: templates/admin/project_applications.html:66
+msgid "Accept this application?"
+msgstr ""
+
+#: templates/admin/project_applications.html:69
+msgid "Accept"
+msgstr ""
+
+#: templates/admin/project_applications.html:73
+msgid "Reject this application?"
+msgstr ""
+
+#: templates/admin/project_applications.html:102
+msgid "No project applications found."
+msgstr ""
+
+#: templates/admin/sub_criterion_form.html:57
+#: templates/auth/company_register.html:10
+#: templates/auth/contractor_register.html:10
+msgid "Back"
+msgstr ""
+
+#: templates/admin/auth/login.html:11 templates/admin_login/login.html:11
+msgid "Admin Login"
+msgstr ""
+
+#: templates/auth/company_register.html:8
+msgid "Owner Registration"
+msgstr ""
+
+#: templates/auth/company_register.html:72
+#: templates/auth/contractor_register.html:72
+msgid "Already have an account?"
+msgstr ""
+
+#: templates/auth/company_register.html:72
+#: templates/auth/contractor_register.html:72
+msgid "Login here"
+msgstr ""
+
+#: templates/auth/contractor_register.html:8
+msgid "Contractor Registration"
+msgstr ""
+
+#: templates/auth/forgot_password.html:9
+msgid "Password Reset"
+msgstr ""
+
+#: templates/auth/forgot_password.html:13
+msgid ""
+"Enter your registered email address to reset your password. We will send "
+"you an email with password reset instructions."
+msgstr ""
+
+#: templates/auth/forgot_password.html:18
+msgid "Email Adresi"
+msgstr ""
+
+#: templates/auth/forgot_password.html:23
+msgid "Back to Login"
+msgstr ""
+
+#: templates/auth/forgot_password.html:26
+msgid "Send Reset Link"
+msgstr ""
+
+#: templates/auth/login.html:42
+msgid "Forgot Password"
+msgstr ""
+
+#: templates/auth/login.html:49
+msgid "Don't have an account?"
+msgstr ""
+
+#: templates/auth/reset_password.html:9
+msgid "Yeni Şifre Belirleme"
+msgstr ""
+
+#: templates/auth/reset_password.html:15
+msgid "Yeni Şifre"
+msgstr ""
+
+#: templates/auth/reset_password.html:19
+msgid "Yeni Şifre (Tekrar)"
+msgstr ""
+
+#: templates/auth/reset_password.html:24
+msgid "Şifreyi Güncelle"
+msgstr ""
+
+#: templates/profile/company_profile.html:9
+msgid "Owner Profile"
+msgstr ""
+
+#: templates/profile/company_profile.html:15
+msgid "Owner Information"
+msgstr ""
+
+#: templates/profile/company_profile.html:26
+msgid "Member Since"
+msgstr ""
+
+#: templates/profile/company_profile.html:33
+msgid "About Company"
+msgstr ""
+
+#: templates/profile/company_profile.html:41
+msgid "Edit Profile"
+msgstr ""
+
+#: templates/profile/company_profile.html:49
+msgid "Projects"
+msgstr ""
+
+#: templates/profile/company_profile.html:56
+msgid "Created Date"
+msgstr ""
+
+#: templates/profile/company_profile.html:67
+msgid "Active"
+msgstr ""
+
+#: templates/profile/company_profile.html:81
+msgid "No projects created yet."
+msgstr ""
+
+#: templates/profile/company_profile.html:86
+msgid "Access Denied. This page is only accessible to company accounts."
+msgstr ""
+
+#: templates/profile/edit_company_profile.html:9
+msgid "Edit Owner Profile"
+msgstr ""
+
+#: templates/reports/contractor_performance.html:8
+msgid "Contractor Performance Report"
+msgstr ""
+
+#: templates/reports/contractor_performance.html:10
+msgid "Download PDF Report"
+msgstr ""
+
+#: templates/reports/contractor_performance.html:13
+msgid "Detailed analysis of your application history and performance metrics"
+msgstr ""
+
+#: templates/reports/contractor_performance.html:22
+msgid "Total Applications"
+msgstr ""
+
+#: templates/reports/contractor_performance.html:30
+msgid "Success Rate"
+msgstr ""
+
+#: templates/reports/contractor_performance.html:38
+msgid "Average TOPSIS Score"
+msgstr ""
+
+#: templates/reports/contractor_performance.html:46
+msgid "Pending Applications"
+msgstr ""
+
+#: templates/reports/contractor_performance.html:58
+msgid "Application Status Distribution"
+msgstr ""
+
+#: templates/reports/contractor_performance.html:68
+msgid "Preferred Project Types and Scores"
+msgstr ""
+
+#: templates/reports/contractor_performance.html:86
+msgid "Subcriteria Performance"
+msgstr ""
+
+#: templates/reports/contractor_performance.html:95
+msgid "Based on"
+msgstr ""
+
+#: templates/reports/contractor_performance.html:95
+msgid "evaluations"
+msgstr ""
+
+#: templates/reports/contractor_performance.html:105
+msgid "No subcriteria data available"
+msgstr ""
+
+#: templates/reports/contractor_performance.html:120
+msgid "Recent Applications"
+msgstr ""
+
+#: templates/reports/contractor_performance.html:130
+msgid "Applied Date"
+msgstr ""
+
+#: templates/reports/contractor_performance.html:169
+msgid "Accepted"
+msgstr ""
+
+#: templates/reports/contractor_performance.html:170
+msgid "Rejected"
+msgstr ""
+
+#: templates/reports/contractor_performance.html:171
+msgid "Pending"
+msgstr ""
+
+#: templates/reports/criterion_groups_topsis.html:9
+msgid "Ana Kriter Grupları İçin Bulanık TOPSIS Analizi"
+msgstr ""
+
+#: templates/reports/criterion_groups_topsis.html:15
+msgid ""
+"Bu rapor, her bir ana kriter grubu (6 grup) için ayrı ayrı bulanık TOPSIS"
+" analizi sonuçlarını göstermektedir. Her grup içindeki alt kriterler "
+"\"detay ağırlık\" değerleri ve başvuru değerlendirme sonuçlarına göre "
+"sıralanmıştır."
+msgstr ""
+
+#: templates/reports/criterion_groups_topsis.html:24
+msgid "Özet Bilgiler"
+msgstr ""
+
+#: templates/reports/criterion_groups_topsis.html:26
+msgid "Toplam Kriter Grupları"
+msgstr ""
+
+#: templates/reports/criterion_groups_topsis.html:35
+msgid "Nasıl Kullanılır?"
+msgstr ""
+
+#: templates/reports/criterion_groups_topsis.html:36
+msgid ""
+"Her kriter grubu için alt kriterler ve başvurular ağırlık ve TOPSIS "
+"skorlarına göre sıralanmıştır."
+msgstr ""
+
+#: templates/reports/criterion_groups_topsis.html:59
+msgid "Kriter Grupları"
+msgstr ""
+
+#: templates/reports/criterion_groups_topsis.html:60
+msgid "Toplam"
+msgstr ""
+
+#: templates/reports/criterion_groups_topsis.html:83
+msgid "Başvuru Verileri"
+msgstr ""
+
+#: templates/reports/criterion_groups_topsis.html:97
+msgid "Alt Kriter Sıralaması"
+msgstr ""
+
+#: templates/reports/criterion_groups_topsis.html:98
+msgid "alt kriter"
+msgstr ""
+
+#: templates/reports/criterion_groups_topsis.html:105
+#: templates/reports/criterion_groups_topsis.html:152
+#: templates/reports/topsis_comparison.html:90
+#: templates/reports/topsis_pdf_report.html:142
+msgid "Sıra"
+msgstr ""
+
+#: templates/reports/criterion_groups_topsis.html:106
+msgid "Alt Kriter Adı"
+msgstr ""
+
+#: templates/reports/criterion_groups_topsis.html:130
+msgid ""
+"Bu kriter grubu için TOPSIS analizi sonuçları mevcut değil veya yeterli "
+"alt kriter bulunmuyor."
+msgstr ""
+
+#: templates/reports/criterion_groups_topsis.html:139
+msgid "Başvuru Sıralaması"
+msgstr ""
+
+#: templates/reports/criterion_groups_topsis.html:140
+msgid "başvuru"
+msgstr ""
+
+#: templates/reports/criterion_groups_topsis.html:145
+msgid "Bu kriter grubundaki alt kriterlere göre başvuruların TOPSIS sıralaması"
+msgstr ""
+
+#: templates/reports/criterion_groups_topsis.html:153
+msgid "Başvuru Sahibi"
+msgstr ""
+
+#: templates/reports/criterion_groups_topsis.html:154
+msgid "TOPSIS Skoru"
+msgstr ""
+
+#: templates/reports/criterion_groups_topsis.html:179
+msgid "Bu kriter grubu için başvuru değerlendirmeleri mevcut değil."
+msgstr ""
+
+#: templates/reports/criterion_groups_topsis.html:193
+msgid ""
+"TOPSIS analizi sonuçları bulunamadı veya hesaplanamadı. Lütfen her bir "
+"kriter grubu için en az 2 alt kriter tanımlandığından emin olun."
+msgstr ""
+
+#: templates/reports/topsis_comparison.html:49
+msgid "TOPSIS Karşılaştırmalı Analiz"
+msgstr ""
+
+#: templates/reports/topsis_comparison.html:52
+msgid "Projeye Dön"
+msgstr ""
+
+#: templates/reports/topsis_comparison.html:55
+msgid "PDF İndir"
+msgstr ""
+
+#: templates/reports/topsis_comparison.html:67
+#: templates/reports/topsis_pdf_report.html:117
+msgid "Proje Sahibi"
+msgstr ""
+
+#: templates/reports/topsis_comparison.html:68
+#: templates/reports/topsis_pdf_report.html:118
+msgid "Durum"
+msgstr ""
+
+#: templates/reports/topsis_comparison.html:69
+#: templates/reports/topsis_pdf_report.html:119
+msgid "Oluşturulma Tarihi"
+msgstr ""
+
+#: templates/reports/topsis_comparison.html:72
+msgid "Beklenen Bitiş Tarihi"
+msgstr ""
+
+#: templates/reports/topsis_comparison.html:73
+#: templates/reports/topsis_pdf_report.html:123
+msgid "Lokasyon"
+msgstr ""
+
+#: templates/reports/topsis_comparison.html:74
+#: templates/reports/topsis_pdf_report.html:124
+msgid "Başvuru Sayısı"
+msgstr ""
+
+#: templates/reports/topsis_comparison.html:83
+msgid "Başvuruların TOPSIS Puanlarına Göre Sıralaması"
+msgstr ""
+
+#: templates/reports/topsis_comparison.html:92
+#: templates/reports/topsis_pdf_report.html:144
+msgid "TOPSIS Puanı"
+msgstr ""
+
+#: templates/reports/topsis_comparison.html:93
+msgid "Bütçe"
+msgstr ""
+
+#: templates/reports/topsis_comparison.html:94
+msgid "Süre (gün)"
+msgstr ""
+
+#: templates/reports/topsis_comparison.html:95
+msgid "İşlemler"
+msgstr ""
+
+#: templates/reports/topsis_comparison.html:117
+msgid "Detaylar"
+msgstr ""
+
+#: templates/reports/topsis_comparison.html:131
+msgid "Kriterlere Göre Karşılaştırma"
+msgstr ""
+
+#: templates/reports/topsis_comparison.html:146
+#: templates/reports/topsis_comparison.html:196
+#: templates/reports/topsis_pdf_report.html:181
+#: templates/reports/topsis_pdf_report.html:217
+msgid "Puan"
+msgstr ""
+
+#: templates/reports/topsis_comparison.html:147
+#: templates/reports/topsis_comparison.html:197
+#: templates/reports/topsis_pdf_report.html:182
+#: templates/reports/topsis_pdf_report.html:218
+msgid "Yüzde"
+msgstr ""
+
+#: templates/reports/topsis_comparison.html:148
+#: templates/reports/topsis_comparison.html:198
+msgid "Görselleştirme"
+msgstr ""
+
+#: templates/reports/topsis_comparison.html:149
+#: templates/reports/topsis_pdf_report.html:183
+msgid "Sıralama"
+msgstr ""
+
+#: templates/reports/topsis_comparison.html:188
+#: templates/reports/topsis_pdf_report.html:212
+msgid "Ağırlık"
+msgstr ""
+
+#: templates/reports/topsis_pdf_report.html:5
+msgid "TOPSIS Analiz Raporu - "
+msgstr ""
+
+#: templates/reports/topsis_pdf_report.html:109
+msgid "TOPSIS Karşılaştırmalı Analiz Raporu"
+msgstr ""
+
+#: templates/reports/topsis_pdf_report.html:110
+#: templates/reports/topsis_pdf_report.html:242
+msgid "Rapor Tarihi"
+msgstr ""
+
+#: templates/reports/topsis_pdf_report.html:122
+msgid "Bitiş Tarihi"
+msgstr ""
+
+#: templates/reports/topsis_pdf_report.html:132
+msgid "Başvuruların Kriterlere Göre Karşılaştırması"
+msgstr ""
+
+#: templates/reports/topsis_pdf_report.html:138
+msgid "TOPSIS Puanlarına Göre Başvuru Sıralaması"
+msgstr ""
+
+#: templates/reports/topsis_pdf_report.html:145
+msgid "Önerilen Bütçe"
+msgstr ""
+
+#: templates/reports/topsis_pdf_report.html:146
+msgid "Önerilen Süre (gün)"
+msgstr ""
+
+#: templates/reports/topsis_pdf_report.html:169
+msgid "Kriterlere Göre Detaylı Analiz"
+msgstr ""
+
+#: templates/reports/topsis_pdf_report.html:241
+msgid "Bu rapor otomatik olarak oluşturulmuştur."
+msgstr ""
+
