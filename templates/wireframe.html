@@ -1,0 +1,1036 @@
+{% extends "base.html" %}
+
+{% block title %}Wireframe Tool{% endblock %}
+
+{% block head %}
+<style>
+    .wireframe-container {
+        min-height: 80vh;
+        background: #f8f9fa;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .wireframe-toolbar {
+        background: #fff;
+        border-bottom: 1px solid #dee2e6;
+        padding: 10px 15px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    .toolbar-group {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+        border-right: 1px solid #dee2e6;
+        padding-right: 15px;
+        margin-right: 10px;
+    }
+    
+    .toolbar-group:last-child {
+        border-right: none;
+        margin-right: 0;
+    }
+    
+    .tool-btn {
+        padding: 8px 12px;
+        border: 1px solid #dee2e6;
+        background: #fff;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 14px;
+    }
+    
+    .tool-btn:hover {
+        background: #e9ecef;
+        border-color: #adb5bd;
+    }
+    
+    .tool-btn.active {
+        background: #0d6efd;
+        color: white;
+        border-color: #0d6efd;
+    }
+    
+    .canvas-area {
+        position: relative;
+        height: calc(100% - 61px);
+        overflow: auto;
+        background: 
+            linear-gradient(to right, #e9ecef 1px, transparent 1px),
+            linear-gradient(to bottom, #e9ecef 1px, transparent 1px);
+        background-size: 20px 20px;
+    }
+    
+    .wireframe-element {
+        position: absolute;
+        border: 2px solid #6c757d;
+        background: rgba(255, 255, 255, 0.9);
+        cursor: move;
+        user-select: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        color: #495057;
+        border-radius: 4px;
+    }
+    
+    .wireframe-element:hover {
+        border-color: #0d6efd;
+        box-shadow: 0 0 5px rgba(13, 110, 253, 0.3);
+    }
+    
+    .wireframe-element.selected {
+        border-color: #0d6efd;
+        box-shadow: 0 0 8px rgba(13, 110, 253, 0.4);
+    }
+    
+    .wireframe-element.button {
+        background: #e9ecef;
+        border: 2px solid #495057;
+        font-weight: bold;
+        text-align: center;
+    }
+    
+    .wireframe-element.input {
+        background: #fff;
+        border: 1px solid #ced4da;
+        padding-left: 10px;
+        justify-content: flex-start;
+    }
+    
+    .wireframe-element.text {
+        background: transparent;
+        border: 1px dashed #6c757d;
+        text-align: center;
+        padding: 5px;
+    }
+    
+    .wireframe-element.image {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .wireframe-element.container {
+        background: rgba(108, 117, 125, 0.1);
+        border: 2px dashed #6c757d;
+    }
+    
+    .resize-handle {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        background: #0d6efd;
+        border: 1px solid #fff;
+        border-radius: 50%;
+    }
+    
+    .resize-handle.se { bottom: -4px; right: -4px; cursor: se-resize; }
+    .resize-handle.sw { bottom: -4px; left: -4px; cursor: sw-resize; }
+    .resize-handle.ne { top: -4px; right: -4px; cursor: ne-resize; }
+    .resize-handle.nw { top: -4px; left: -4px; cursor: nw-resize; }
+    
+    .properties-panel {
+        position: fixed;
+        right: 20px;
+        top: 100px;
+        width: 250px;
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        display: none;
+    }
+    
+    .properties-panel.show {
+        display: block;
+    }
+    
+    .property-group {
+        margin-bottom: 15px;
+    }
+    
+    .property-label {
+        font-weight: 600;
+        margin-bottom: 5px;
+        font-size: 12px;
+        color: #495057;
+    }
+    
+    .property-input {
+        width: 100%;
+        padding: 6px 8px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 12px;
+    }
+    
+    .color-picker-group {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+    
+    .export-options {
+        margin-top: 20px;
+        padding-top: 15px;
+        border-top: 1px solid #dee2e6;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>{{ _('Construct Circular System Flow Diagram') }}</h2>
+            <p class="text-muted">{{ _('Complete technical architecture and workflow visualization') }}</p>
+        </div>
+    </div>
+
+    <!-- System Flow Diagram Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-project-diagram"></i> {{ _('Program Logic & Workflow') }}
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <img src="{{ url_for('static', filename='images/system-flow-diagram.png') }}" 
+                         alt="Construct Circular System Flow Diagram" 
+                         class="img-fluid w-100" 
+                         style="max-height: 600px; object-fit: contain; background: #f8f9fa;">
+                    <div class="p-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-primary">{{ _('Key Components:') }}</h6>
+                                <ul class="list-unstyled small">
+                                    <li><i class="fas fa-check text-success"></i> {{ _('Role-based Authentication System') }}</li>
+                                    <li><i class="fas fa-check text-success"></i> {{ _('AI-Powered Document Evaluation') }}</li>
+                                    <li><i class="fas fa-check text-success"></i> {{ _('TOPSIS Multi-Criteria Analysis') }}</li>
+                                    <li><i class="fas fa-check text-success"></i> {{ _('Real-time Application Scoring') }}</li>
+                                    <li><i class="fas fa-check text-success"></i> {{ _('Multi-language Support') }}</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-primary">{{ _('User Flows:') }}</h6>
+                                <ul class="list-unstyled small">
+                                    <li><span class="badge bg-primary">{{ _('Company') }}</span> {{ _('Project creation and evaluation') }}</li>
+                                    <li><span class="badge bg-success">{{ _('Contractor') }}</span> {{ _('Application submission and tracking') }}</li>
+                                    <li><span class="badge bg-warning">{{ _('Admin') }}</span> {{ _('System management and oversight') }}</li>
+                                    <li><span class="badge bg-info">{{ _('AI System') }}</span> {{ _('Document analysis and KPI scoring') }}</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <a href="{{ url_for('main.download_wireframe') }}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-download"></i> {{ _('Download Documentation') }}
+                            </a>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="toggleFlowDetails()">
+                                <i class="fas fa-info-circle"></i> {{ _('Show Details') }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Flow Explanation -->
+    <div class="row mb-4" id="flow-details" style="display: none;">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">{{ _('Detailed Program Logic Explanation') }}</h6>
+                </div>
+                <div class="card-body">
+                    <div class="accordion" id="flowAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#authentication">
+                                    {{ _('1. Authentication & User Management') }}
+                                </button>
+                            </h2>
+                            <div id="authentication" class="accordion-collapse collapse show" data-bs-parent="#flowAccordion">
+                                <div class="accordion-body small">
+                                    <p>{{ _('Three distinct user roles with specialized dashboards and permissions:') }}</p>
+                                    <ul>
+                                        <li><strong>{{ _('Companies (İşveren)') }}:</strong> {{ _('Create projects, define criteria, evaluate applications') }}</li>
+                                        <li><strong>{{ _('Contractors (Yüklenici)') }}:</strong> {{ _('Browse projects, submit applications, track status') }}</li>
+                                        <li><strong>{{ _('Administrators') }}:</strong> {{ _('System oversight, user management, platform configuration') }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#project-creation">
+                                    {{ _('2. Project Creation & Criteria Setup') }}
+                                </button>
+                            </h2>
+                            <div id="project-creation" class="accordion-collapse collapse" data-bs-parent="#flowAccordion">
+                                <div class="accordion-body small">
+                                    <p>{{ _('Multi-step project creation process with flexible criteria system:') }}</p>
+                                    <ul>
+                                        <li>{{ _('Basic project information (name, description, budget, timeline)') }}</li>
+                                        <li>{{ _('Custom criteria definition with weighted sub-criteria') }}</li>
+                                        <li>{{ _('KPI selection for AI-powered document evaluation') }}</li>
+                                        <li>{{ _('Document type requirements and upload rules') }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ai-evaluation">
+                                    {{ _('3. AI-Powered Document Evaluation') }}
+                                </button>
+                            </h2>
+                            <div id="ai-evaluation" class="accordion-collapse collapse" data-bs-parent="#flowAccordion">
+                                <div class="accordion-body small">
+                                    <p>{{ _('OpenAI integration for intelligent document analysis:') }}</p>
+                                    <ul>
+                                        <li>{{ _('Automatic text extraction from PDF, DOCX, and web content') }}</li>
+                                        <li>{{ _('KPI-based scoring (1-7 scale) for uploaded documents') }}</li>
+                                        <li>{{ _('Real-time evaluation with fallback mechanisms') }}</li>
+                                        <li>{{ _('Context-aware analysis based on project requirements') }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#topsis">
+                                    {{ _('4. TOPSIS Multi-Criteria Analysis') }}
+                                </button>
+                            </h2>
+                            <div id="topsis" class="accordion-collapse collapse" data-bs-parent="#flowAccordion">
+                                <div class="accordion-body small">
+                                    <p>{{ _('Advanced decision-making algorithm for objective contractor ranking:') }}</p>
+                                    <ul>
+                                        <li>{{ _('Fuzzy TOPSIS implementation with group analysis') }}</li>
+                                        <li>{{ _('Weighted criteria matrix calculation') }}</li>
+                                        <li>{{ _('Automated ranking with differentiated scores') }}</li>
+                                        <li>{{ _('Comparative analysis and detailed reporting') }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#database">
+                                    {{ _('5. Database Architecture') }}
+                                </button>
+                            </h2>
+                            <div id="database" class="accordion-collapse collapse" data-bs-parent="#flowAccordion">
+                                <div class="accordion-body small">
+                                    <p>{{ _('PostgreSQL-based relational database with optimized structure:') }}</p>
+                                    <ul>
+                                        <li>{{ _('User management with role-based permissions') }}</li>
+                                        <li>{{ _('Project and application lifecycle tracking') }}</li>
+                                        <li>{{ _('Document metadata and AI evaluation storage') }}</li>
+                                        <li>{{ _('TOPSIS calculation history and audit trails') }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleFlowDetails() {
+    const details = document.getElementById('flow-details');
+    const button = event.target;
+    
+    if (details.style.display === 'none' || details.style.display === '') {
+        details.style.display = 'block';
+        button.innerHTML = '<i class="fas fa-eye-slash"></i> {{ _("Hide Details") }}';
+    } else {
+        details.style.display = 'none';
+        button.innerHTML = '<i class="fas fa-info-circle"></i> {{ _("Show Details") }}';
+    }
+}
+
+// Voice navigation integration
+document.addEventListener('DOMContentLoaded', function() {
+    // Load voice navigation if available
+    if (typeof voiceNavigation !== 'undefined') {
+        voiceNavigation.addPageHints('/wireframe', {
+            'tr': 'Wireframe sayfası. Sistem akış diagramını görüntülüyorsunuz.',
+            'en': 'Wireframe page. You are viewing the system flow diagram.'
+        });
+    }
+});
+</script>
+
+{% endblock %}
+        <div class="wireframe-toolbar">
+            <div class="toolbar-group">
+                <button class="tool-btn active" data-tool="select">
+                    <i class="fas fa-mouse-pointer"></i> {{ _('Select') }}
+                </button>
+                <button class="tool-btn" data-tool="pan">
+                    <i class="fas fa-hand-paper"></i> {{ _('Pan') }}
+                </button>
+            </div>
+            
+            <div class="toolbar-group">
+                <button class="tool-btn" data-element="container">
+                    <i class="fas fa-square"></i> {{ _('Container') }}
+                </button>
+                <button class="tool-btn" data-element="button">
+                    <i class="fas fa-stop"></i> {{ _('Button') }}
+                </button>
+                <button class="tool-btn" data-element="input">
+                    <i class="fas fa-edit"></i> {{ _('Input') }}
+                </button>
+                <button class="tool-btn" data-element="text">
+                    <i class="fas fa-font"></i> {{ _('Text') }}
+                </button>
+                <button class="tool-btn" data-element="image">
+                    <i class="fas fa-image"></i> {{ _('Image') }}
+                </button>
+            </div>
+            
+            <div class="toolbar-group">
+                <button class="tool-btn" onclick="duplicateSelected()">
+                    <i class="fas fa-copy"></i> {{ _('Duplicate') }}
+                </button>
+                <button class="tool-btn" onclick="deleteSelected()">
+                    <i class="fas fa-trash"></i> {{ _('Delete') }}
+                </button>
+            </div>
+            
+            <div class="toolbar-group">
+                <button class="tool-btn" onclick="saveWireframe()">
+                    <i class="fas fa-save"></i> {{ _('Save') }}
+                </button>
+                <button class="tool-btn" onclick="loadWireframe()">
+                    <i class="fas fa-folder-open"></i> {{ _('Load') }}
+                </button>
+                <button class="tool-btn" onclick="exportWireframe()">
+                    <i class="fas fa-download"></i> {{ _('Export') }}
+                </button>
+            </div>
+            
+            <div class="toolbar-group">
+                <span style="font-size: 12px; color: #6c757d;">{{ _('Zoom') }}:</span>
+                <button class="tool-btn" onclick="zoomOut()">-</button>
+                <span id="zoom-level" style="font-size: 12px; min-width: 40px; text-align: center;">100%</span>
+                <button class="tool-btn" onclick="zoomIn()">+</button>
+            </div>
+        </div>
+        
+        <div class="canvas-area" id="canvas">
+            <!-- Pre-loaded Construct Circular wireframe elements -->
+        </div>
+    </div>
+    
+    <div class="properties-panel" id="properties-panel">
+        <h6>{{ _('Element Properties') }}</h6>
+        
+        <div class="property-group">
+            <div class="property-label">{{ _('Text') }}</div>
+            <input type="text" class="property-input" id="element-text" placeholder="{{ _('Element text') }}">
+        </div>
+        
+        <div class="property-group">
+            <div class="property-label">{{ _('Position & Size') }}</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+                <input type="number" class="property-input" id="element-x" placeholder="X">
+                <input type="number" class="property-input" id="element-y" placeholder="Y">
+                <input type="number" class="property-input" id="element-width" placeholder="{{ _('Width') }}">
+                <input type="number" class="property-input" id="element-height" placeholder="{{ _('Height') }}">
+            </div>
+        </div>
+        
+        <div class="property-group">
+            <div class="property-label">{{ _('Colors') }}</div>
+            <div class="color-picker-group">
+                <input type="color" id="element-bg" title="{{ _('Background') }}">
+                <input type="color" id="element-border" title="{{ _('Border') }}">
+            </div>
+        </div>
+        
+        <div class="export-options">
+            <button class="btn btn-sm btn-primary w-100" onclick="exportToPNG()">
+                {{ _('Export as PNG') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentTool = 'select';
+let selectedElement = null;
+let isDragging = false;
+let isResizing = false;
+let dragOffset = { x: 0, y: 0 };
+let zoomLevel = 1;
+let elementCounter = 0;
+
+// Initialize event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    setupToolbar();
+    setupCanvas();
+    setupPropertyPanel();
+    createConstructCircularWireframe();
+});
+
+function setupToolbar() {
+    // Tool selection
+    document.querySelectorAll('.tool-btn[data-tool]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentTool = this.dataset.tool;
+        });
+    });
+    
+    // Element creation
+    document.querySelectorAll('.tool-btn[data-element]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            createElementAtCenter(this.dataset.element);
+        });
+    });
+}
+
+function setupCanvas() {
+    const canvas = document.getElementById('canvas');
+    
+    canvas.addEventListener('click', function(e) {
+        if (currentTool === 'select') {
+            if (e.target === canvas) {
+                deselectAll();
+            }
+        }
+    });
+}
+
+function createElementAtCenter(type) {
+    const canvas = document.getElementById('canvas');
+    const rect = canvas.getBoundingClientRect();
+    const centerX = rect.width / 2 - 50;
+    const centerY = rect.height / 2 - 25;
+    
+    createElement(type, centerX, centerY);
+}
+
+function createElement(type, x, y) {
+    elementCounter++;
+    const element = document.createElement('div');
+    element.className = `wireframe-element ${type}`;
+    element.id = `element-${elementCounter}`;
+    element.style.left = x + 'px';
+    element.style.top = y + 'px';
+    
+    // Default dimensions and content
+    switch(type) {
+        case 'container':
+            element.style.width = '200px';
+            element.style.height = '150px';
+            element.textContent = 'Container';
+            break;
+        case 'button':
+            element.style.width = '100px';
+            element.style.height = '35px';
+            element.textContent = 'Button';
+            break;
+        case 'input':
+            element.style.width = '150px';
+            element.style.height = '35px';
+            element.textContent = 'Input field';
+            break;
+        case 'text':
+            element.style.width = '120px';
+            element.style.height = '20px';
+            element.textContent = 'Text label';
+            break;
+        case 'image':
+            element.style.width = '100px';
+            element.style.height = '100px';
+            element.innerHTML = '<i class="fas fa-image" style="font-size: 24px;"></i><br>Image';
+            break;
+    }
+    
+    setupElementEvents(element);
+    document.getElementById('canvas').appendChild(element);
+    selectElement(element);
+}
+
+function setupElementEvents(element) {
+    element.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (currentTool === 'select') {
+            selectElement(this);
+        }
+    });
+    
+    element.addEventListener('mousedown', function(e) {
+        if (currentTool === 'select') {
+            isDragging = true;
+            const rect = this.getBoundingClientRect();
+            dragOffset.x = e.clientX - rect.left;
+            dragOffset.y = e.clientY - rect.top;
+            selectElement(this);
+        }
+    });
+    
+    element.addEventListener('dblclick', function() {
+        const newText = prompt('{{ _("Enter text") }}:', this.textContent);
+        if (newText !== null) {
+            this.textContent = newText;
+            updatePropertyPanel();
+        }
+    });
+}
+
+function selectElement(element) {
+    deselectAll();
+    selectedElement = element;
+    element.classList.add('selected');
+    addResizeHandles(element);
+    showPropertyPanel();
+    updatePropertyPanel();
+}
+
+function deselectAll() {
+    document.querySelectorAll('.wireframe-element').forEach(el => {
+        el.classList.remove('selected');
+        el.querySelectorAll('.resize-handle').forEach(handle => handle.remove());
+    });
+    selectedElement = null;
+    hidePropertyPanel();
+}
+
+function addResizeHandles(element) {
+    const handles = ['nw', 'ne', 'sw', 'se'];
+    handles.forEach(pos => {
+        const handle = document.createElement('div');
+        handle.className = `resize-handle ${pos}`;
+        handle.addEventListener('mousedown', function(e) {
+            e.stopPropagation();
+            isResizing = true;
+            resizeDirection = pos;
+        });
+        element.appendChild(handle);
+    });
+}
+
+// Mouse events for dragging and resizing
+document.addEventListener('mousemove', function(e) {
+    if (isDragging && selectedElement && currentTool === 'select') {
+        const canvas = document.getElementById('canvas');
+        const canvasRect = canvas.getBoundingClientRect();
+        const x = e.clientX - canvasRect.left - dragOffset.x;
+        const y = e.clientY - canvasRect.top - dragOffset.y;
+        
+        selectedElement.style.left = Math.max(0, x) + 'px';
+        selectedElement.style.top = Math.max(0, y) + 'px';
+        updatePropertyPanel();
+    }
+    
+    if (isResizing && selectedElement) {
+        const rect = selectedElement.getBoundingClientRect();
+        const canvas = document.getElementById('canvas');
+        const canvasRect = canvas.getBoundingClientRect();
+        
+        const mouseX = e.clientX - canvasRect.left;
+        const mouseY = e.clientY - canvasRect.top;
+        
+        const elementX = parseInt(selectedElement.style.left);
+        const elementY = parseInt(selectedElement.style.top);
+        
+        let newWidth = rect.width;
+        let newHeight = rect.height;
+        
+        if (resizeDirection.includes('e')) {
+            newWidth = mouseX - elementX;
+        }
+        if (resizeDirection.includes('s')) {
+            newHeight = mouseY - elementY;
+        }
+        
+        selectedElement.style.width = Math.max(20, newWidth) + 'px';
+        selectedElement.style.height = Math.max(20, newHeight) + 'px';
+        updatePropertyPanel();
+    }
+});
+
+document.addEventListener('mouseup', function() {
+    isDragging = false;
+    isResizing = false;
+});
+
+// Property panel functions
+function setupPropertyPanel() {
+    document.getElementById('element-text').addEventListener('input', function() {
+        if (selectedElement) {
+            selectedElement.textContent = this.value;
+        }
+    });
+    
+    ['element-x', 'element-y', 'element-width', 'element-height'].forEach(id => {
+        document.getElementById(id).addEventListener('input', function() {
+            if (selectedElement) {
+                const property = id.split('-')[1];
+                const value = this.value + (property === 'x' || property === 'y' ? 'px' : 'px');
+                
+                if (property === 'x') selectedElement.style.left = value;
+                else if (property === 'y') selectedElement.style.top = value;
+                else if (property === 'width') selectedElement.style.width = value;
+                else if (property === 'height') selectedElement.style.height = value;
+            }
+        });
+    });
+    
+    document.getElementById('element-bg').addEventListener('input', function() {
+        if (selectedElement) {
+            selectedElement.style.backgroundColor = this.value;
+        }
+    });
+    
+    document.getElementById('element-border').addEventListener('input', function() {
+        if (selectedElement) {
+            selectedElement.style.borderColor = this.value;
+        }
+    });
+}
+
+function showPropertyPanel() {
+    document.getElementById('properties-panel').classList.add('show');
+}
+
+function hidePropertyPanel() {
+    document.getElementById('properties-panel').classList.remove('show');
+}
+
+function updatePropertyPanel() {
+    if (!selectedElement) return;
+    
+    document.getElementById('element-text').value = selectedElement.textContent;
+    document.getElementById('element-x').value = parseInt(selectedElement.style.left);
+    document.getElementById('element-y').value = parseInt(selectedElement.style.top);
+    document.getElementById('element-width').value = parseInt(selectedElement.style.width);
+    document.getElementById('element-height').value = parseInt(selectedElement.style.height);
+}
+
+// Utility functions
+function duplicateSelected() {
+    if (selectedElement) {
+        const clone = selectedElement.cloneNode(true);
+        clone.id = `element-${++elementCounter}`;
+        clone.style.left = (parseInt(selectedElement.style.left) + 20) + 'px';
+        clone.style.top = (parseInt(selectedElement.style.top) + 20) + 'px';
+        clone.classList.remove('selected');
+        clone.querySelectorAll('.resize-handle').forEach(handle => handle.remove());
+        
+        setupElementEvents(clone);
+        document.getElementById('canvas').appendChild(clone);
+        selectElement(clone);
+    }
+}
+
+function deleteSelected() {
+    if (selectedElement) {
+        selectedElement.remove();
+        selectedElement = null;
+        hidePropertyPanel();
+    }
+}
+
+function zoomIn() {
+    zoomLevel = Math.min(zoomLevel + 0.1, 2);
+    updateZoom();
+}
+
+function zoomOut() {
+    zoomLevel = Math.max(zoomLevel - 0.1, 0.5);
+    updateZoom();
+}
+
+function updateZoom() {
+    const canvas = document.getElementById('canvas');
+    canvas.style.transform = `scale(${zoomLevel})`;
+    canvas.style.transformOrigin = 'top left';
+    document.getElementById('zoom-level').textContent = Math.round(zoomLevel * 100) + '%';
+}
+
+// Save/Load/Export functions
+function saveWireframe() {
+    const elements = [];
+    document.querySelectorAll('.wireframe-element').forEach(el => {
+        elements.push({
+            id: el.id,
+            type: el.className.split(' ')[1],
+            x: parseInt(el.style.left),
+            y: parseInt(el.style.top),
+            width: parseInt(el.style.width),
+            height: parseInt(el.style.height),
+            text: el.textContent,
+            backgroundColor: el.style.backgroundColor,
+            borderColor: el.style.borderColor
+        });
+    });
+    
+    const wireframeData = {
+        elements: elements,
+        zoom: zoomLevel
+    };
+    
+    const dataStr = JSON.stringify(wireframeData, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    const url = URL.createObjectURL(dataBlob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'wireframe.json';
+    link.click();
+}
+
+function loadWireframe() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const wireframeData = JSON.parse(e.target.result);
+                    loadWireframeData(wireframeData);
+                } catch (error) {
+                    alert('{{ _("Error loading wireframe file") }}');
+                }
+            };
+            reader.readAsText(file);
+        }
+    });
+    input.click();
+}
+
+function loadWireframeData(data) {
+    // Clear canvas
+    document.getElementById('canvas').innerHTML = '';
+    elementCounter = 0;
+    
+    // Load elements
+    data.elements.forEach(elemData => {
+        const element = document.createElement('div');
+        element.className = `wireframe-element ${elemData.type}`;
+        element.id = elemData.id;
+        element.style.left = elemData.x + 'px';
+        element.style.top = elemData.y + 'px';
+        element.style.width = elemData.width + 'px';
+        element.style.height = elemData.height + 'px';
+        element.textContent = elemData.text;
+        
+        if (elemData.backgroundColor) {
+            element.style.backgroundColor = elemData.backgroundColor;
+        }
+        if (elemData.borderColor) {
+            element.style.borderColor = elemData.borderColor;
+        }
+        
+        setupElementEvents(element);
+        document.getElementById('canvas').appendChild(element);
+        
+        elementCounter = Math.max(elementCounter, parseInt(elemData.id.split('-')[1]) || 0);
+    });
+    
+    // Set zoom
+    if (data.zoom) {
+        zoomLevel = data.zoom;
+        updateZoom();
+    }
+}
+
+function exportWireframe() {
+    // Simple export - save as image would require canvas conversion
+    saveWireframe();
+}
+
+function exportToPNG() {
+    // Convert wireframe to PNG
+    const canvas = document.getElementById('canvas');
+    const rect = canvas.getBoundingClientRect();
+    
+    // Create a temporary canvas
+    const tempCanvas = document.createElement('canvas');
+    const ctx = tempCanvas.getContext('2d');
+    tempCanvas.width = rect.width;
+    tempCanvas.height = rect.height;
+    
+    // Fill background
+    ctx.fillStyle = '#f8f9fa';
+    ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+    
+    // Draw grid
+    ctx.strokeStyle = '#e9ecef';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < tempCanvas.width; x += 20) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, tempCanvas.height);
+        ctx.stroke();
+    }
+    for (let y = 0; y < tempCanvas.height; y += 20) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(tempCanvas.width, y);
+        ctx.stroke();
+    }
+    
+    // Draw elements
+    document.querySelectorAll('.wireframe-element').forEach(el => {
+        const x = parseInt(el.style.left);
+        const y = parseInt(el.style.top);
+        const width = parseInt(el.style.width);
+        const height = parseInt(el.style.height);
+        
+        // Draw element background
+        ctx.fillStyle = el.style.backgroundColor || '#ffffff';
+        ctx.fillRect(x, y, width, height);
+        
+        // Draw element border
+        ctx.strokeStyle = el.style.borderColor || '#6c757d';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, width, height);
+        
+        // Draw text
+        ctx.fillStyle = '#495057';
+        ctx.font = '12px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(el.textContent, x + width/2, y + height/2 + 4);
+    });
+    
+    // Download the image
+    tempCanvas.toBlob(function(blob) {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'wireframe.png';
+        link.click();
+    });
+}
+
+// Create Construct Circular platform wireframe
+function createConstructCircularWireframe() {
+    // Clear any existing elements
+    document.getElementById('canvas').innerHTML = '';
+    elementCounter = 0;
+    
+    // Header/Navigation
+    createWireframeElement('container', 50, 20, 800, 80, 'Header - Construct Circular Logo | Navigation Menu | Avatar/Account');
+    
+    // Main Flow - Company Side
+    createWireframeElement('text', 50, 120, 200, 30, 'İŞVEREN AKIŞI', '#e3f2fd');
+    createWireframeElement('container', 50, 160, 200, 80, 'Login\n(Company Account)');
+    createWireframeElement('container', 50, 260, 200, 80, 'Dashboard\n- My Projects\n- Create New Project');
+    createWireframeElement('container', 50, 360, 200, 100, 'Project Creation\n- Project Details\n- Criteria & Weights\n- KPI Definitions');
+    createWireframeElement('container', 50, 480, 200, 80, 'Project Published\n- Applications List\n- TOPSIS Analysis');
+    createWireframeElement('container', 50, 580, 200, 80, 'Decision Making\n- Reports\n- Winner Selection');
+    
+    // Contractor Side
+    createWireframeElement('text', 300, 120, 200, 30, 'YÜKLENİCİ AKIŞI', '#e8f5e8');
+    createWireframeElement('container', 300, 160, 200, 80, 'Login\n(Contractor Account)');
+    createWireframeElement('container', 300, 260, 200, 80, 'Browse Projects\n- Available Projects\n- Filter & Search');
+    createWireframeElement('container', 300, 360, 200, 100, 'Apply to Project\n- Upload Documents\n- KPI Files\n- Submit Application');
+    createWireframeElement('container', 300, 480, 200, 80, 'Track Applications\n- Status Updates\n- AI Evaluation Results');
+    createWireframeElement('container', 300, 580, 200, 80, 'Results\n- TOPSIS Scores\n- Project Awards');
+    
+    // AI & Analysis Side
+    createWireframeElement('text', 550, 120, 200, 30, 'AI & ANALİZ SİSTEMİ', '#fff3e0');
+    createWireframeElement('container', 550, 160, 200, 80, 'Document Upload\nProcessing');
+    createWireframeElement('container', 550, 260, 200, 80, 'AI Evaluation\n(OpenAI API)\nKPI Scoring');
+    createWireframeElement('container', 550, 360, 200, 100, 'TOPSIS Algorithm\n- Multi-criteria Analysis\n- Fuzzy Logic\n- Group Analysis');
+    createWireframeElement('container', 550, 480, 200, 80, 'Report Generation\n- PDF Reports\n- Charts & Visuals');
+    createWireframeElement('container', 550, 580, 200, 80, 'Final Rankings\n- Decision Matrix\n- Recommendations');
+    
+    // Flow Arrows (using text elements to show connections)
+    createWireframeElement('text', 260, 190, 30, 20, '→', '#666');
+    createWireframeElement('text', 260, 290, 30, 20, '→', '#666');
+    createWireframeElement('text', 260, 400, 30, 20, '→', '#666');
+    createWireframeElement('text', 260, 510, 30, 20, '→', '#666');
+    
+    createWireframeElement('text', 510, 190, 30, 20, '→', '#666');
+    createWireframeElement('text', 510, 290, 30, 20, '→', '#666');
+    createWireframeElement('text', 510, 400, 30, 20, '→', '#666');
+    createWireframeElement('text', 510, 510, 30, 20, '→', '#666');
+    
+    // Cross connections (AI processing)
+    createWireframeElement('text', 380, 360, 60, 20, '→ AI →', '#ff9800');
+    createWireframeElement('text', 180, 520, 60, 20, '← Results', '#4caf50');
+    
+    // Database
+    createWireframeElement('container', 400, 680, 150, 60, 'PostgreSQL\nDatabase\n- Projects, Users\n- Applications, Scores');
+    
+    // External APIs
+    createWireframeElement('container', 700, 300, 120, 60, 'OpenAI API\nDocument\nEvaluation');
+    
+    // Legend/Key
+    createWireframeElement('container', 50, 700, 700, 80, 'PLATFORM FEATURES:\n• Multi-language Support (TR/EN) • Role-based Authentication • File Upload & Processing\n• AI-powered Document Analysis • TOPSIS Multi-criteria Decision Making • PDF Report Generation\n• Real-time Updates • Responsive Design • Admin Panel');
+}
+
+function createWireframeElement(type, x, y, width, height, text, bgColor = '') {
+    elementCounter++;
+    const element = document.createElement('div');
+    element.className = `wireframe-element ${type}`;
+    element.id = `element-${elementCounter}`;
+    element.style.left = x + 'px';
+    element.style.top = y + 'px';
+    element.style.width = width + 'px';
+    element.style.height = height + 'px';
+    element.textContent = text;
+    
+    if (bgColor) {
+        element.style.backgroundColor = bgColor;
+    }
+    
+    // Style based on content
+    if (text.includes('İŞVEREN') || text.includes('COMPANY')) {
+        element.style.backgroundColor = '#e3f2fd';
+        element.style.fontWeight = 'bold';
+    } else if (text.includes('YÜKLENİCİ') || text.includes('CONTRACTOR')) {
+        element.style.backgroundColor = '#e8f5e8';
+        element.style.fontWeight = 'bold';
+    } else if (text.includes('AI') || text.includes('ANALİZ')) {
+        element.style.backgroundColor = '#fff3e0';
+        element.style.fontWeight = 'bold';
+    } else if (text.includes('→')) {
+        element.style.backgroundColor = 'transparent';
+        element.style.border = 'none';
+        element.style.fontSize = '16px';
+        element.style.fontWeight = 'bold';
+        element.style.color = bgColor || '#666';
+    }
+    
+    setupElementEvents(element);
+    document.getElementById('canvas').appendChild(element);
+}
+</script>
+{% endblock %}
