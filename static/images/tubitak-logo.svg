@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80" width="200" height="80">
+  <!-- TUBITAK Logo SVG -->
+  <defs>
+    <linearGradient id="tubितakGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0066cc;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#004499;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="200" height="80" fill="#ffffff" stroke="#e0e0e0" stroke-width="1"/>
+  
+  <!-- TUBITAK Text -->
+  <text x="100" y="25" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="url(#tubितakGradient)">TÜBİTAK</text>
+  
+  <!-- Turkish Science Foundation -->
+  <text x="100" y="45" font-family="Arial, sans-serif" font-size="8" text-anchor="middle" fill="#666666">Türkiye Bilimsel ve Teknolojik</text>
+  <text x="100" y="55" font-family="Arial, sans-serif" font-size="8" text-anchor="middle" fill="#666666">Araştırma Kurumu</text>
+  
+  <!-- Symbolic design element -->
+  <circle cx="30" cy="40" r="15" fill="url(#tubितakGradient)" opacity="0.3"/>
+  <polygon points="25,35 35,35 30,45" fill="url(#tubितakGradient)" opacity="0.6"/>
+  
+  <circle cx="170" cy="40" r="15" fill="url(#tubितakGradient)" opacity="0.3"/>
+  <polygon points="165,35 175,35 170,45" fill="url(#tubितakGradient)" opacity="0.6"/>
+</svg>
