@@ -1,0 +1,451 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow bg-dark text-light">
+                <div class="card-header bg-primary">
+                    <h4 class="mb-0">{% if edit_mode %}{{ _('Edit Application') }}{% else %}{{ _('Apply for Project') }}{% endif %}: {{ project.name }}</h4>
+                </div>
+                <div class="card-body bg-dark">
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+
+                        <!-- Project Application Details -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom border-secondary pb-2">{{ _('Application Details') }}</h5>
+                            <div class="mb-3">
+                                {{ form.cover_letter.label(class="form-label text-light") }}
+                                {{ form.cover_letter(class="form-control bg-dark text-light border-secondary" + (" is-invalid" if form.cover_letter.errors else ""), rows=5) }}
+                                {% for error in form.cover_letter.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                                <small class="text-muted">{{ _('Explain why you are the best fit for this project') }}</small>
+                            </div>
+
+                        </div>
+
+                        <!-- Project Criteria Section -->
+                        {% if criteria %}
+                        <div class="mb-4">
+                            <h5 class="border-bottom border-secondary pb-2 mb-3">
+                                {{ _('Project Criteria') }}
+                                <button type="button" class="btn btn-sm btn-outline-primary float-end" onclick="selectAllCriteria()">
+                                    <i class="fas fa-check-square"></i> {{ _('Select All') }}
+                                </button>
+                            </h5>
+                            {% for criterion in criteria %}
+                            <div class="card mb-3 bg-dark border-secondary">
+                                <!-- Açılır/kapanır kriter başlığı -->
+                                <div class="card-header bg-dark border-secondary cursor-pointer d-flex justify-content-between align-items-center"
+                                     data-bs-toggle="collapse" 
+                                     data-bs-target="#criterion_{{ criterion.id }}" 
+                                     aria-expanded="{% if loop.index == 1 %}true{% else %}false{% endif %}" 
+                                     aria-controls="criterion_{{ criterion.id }}"
+                                     id="heading_{{ criterion.id }}">
+                                    <div>
+                                        <h6 class="mb-0 d-flex align-items-center text-primary">
+                                            <i class="fas fa-layer-group me-2"></i>
+                                            {{ criterion.translated_name if criterion.translated_name else criterion.name }}
+                                            <span class="badge bg-info ms-2 rounded-pill">{{ criterion.sub_criteria|length if criterion.sub_criteria else 0 }}</span>
+                                        </h6>
+                                        {% if criterion.description %}
+                                        <small class="text-muted">{{ criterion.translated_description if criterion.translated_description else criterion.description }}</small>
+                                        {% endif %}
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-chevron-down toggle-icon"></i>
+                                    </div>
+                                </div>
+                                
+                                <!-- Açılır/kapanır içerik -->
+                                <div id="criterion_{{ criterion.id }}" class="collapse {% if loop.index == 1 %}show{% endif %}" aria-labelledby="heading_{{ criterion.id }}">
+                                    <div class="card-body bg-dark">
+                                        {% if criterion.sub_criteria %}
+                                            <!-- Alt kriter listesi -->
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <h6 class="text-light mb-0">
+                                                        <i class="fas fa-list-alt me-2"></i>{{ _('Sub-Criteria') }}
+                                                    </h6>
+                                                    <button type="button" class="btn btn-sm btn-outline-info" 
+                                                            onclick="toggleAllSubCriteria('{{ criterion.id }}')">
+                                                        <i class="fas fa-eye me-1"></i> {{ _('Show/Hide All') }}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Alt kriter kartları -->
+                                            <div class="sub-criteria-container">
+                                                {% for sub in criterion.sub_criteria %}
+                                                <div class="card mb-3 bg-dark border-secondary">
+                                                    <!-- Alt kriter başlığı -->
+                                                    <div class="card-header bg-dark border-secondary d-flex justify-content-between align-items-center cursor-pointer"
+                                                         data-bs-toggle="collapse" 
+                                                         data-bs-target="#sub_content_{{ sub.id }}" 
+                                                         aria-expanded="false" 
+                                                         aria-controls="sub_content_{{ sub.id }}">
+                                                        <div class="form-check">
+                                                            <input type="checkbox" 
+                                                                   class="form-check-input bg-dark border-secondary criterion-checkbox" 
+                                                                   name="selected_subcriteria[]" 
+                                                                   value="{{ sub.id }}"
+                                                                   id="sub_{{ sub.id }}"
+                                                                   data-upload-target="upload_{{ sub.id }}"
+                                                                   data-collapse-target="sub_content_{{ sub.id }}"
+                                                                   {% if edit_mode and existing_evals %}
+                                                                   {% for eval in existing_evals %}
+                                                                   {% if eval.sub_criterion_id == sub.id %}checked{% endif %}
+                                                                   {% endfor %}
+                                                                   {% endif %}
+                                                                   onclick="event.stopPropagation();">
+                                                            <label class="form-check-label text-light ms-2" for="sub_{{ sub.id }}" onclick="event.stopPropagation();">
+                                                                <strong>{{ sub.translated_name if sub.translated_name else sub.name }}</strong>
+                                                            </label>
+                                                        </div>
+                                                        <div>
+                                                            {% if sub.kpi_definitions %}
+                                                            <span class="badge bg-warning me-2">{{ sub.kpi_definitions|length }} KPI</span>
+                                                            {% endif %}
+                                                            <i class="fas fa-chevron-down toggle-icon-sm"></i>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- Alt kriter içeriği -->
+                                                    <div id="sub_content_{{ sub.id }}" class="collapse">
+                                                        <div class="card-body bg-dark py-3">
+                                                            <!-- Açıklama -->
+                                                            {% if sub.description %}
+                                                            <div class="mb-3">
+                                                                <p class="small text-muted mb-0">
+                                                                    <i class="fas fa-info-circle me-1"></i>
+                                                                    {{ sub.translated_description if sub.translated_description else sub.description }}
+                                                                </p>
+                                                            </div>
+                                                            {% endif %}
+                                                            
+                                                            <!-- Dosya yükleme alanı -->
+                                                            <div id="upload_{{ sub.id }}" class="upload-section mt-3 border-top border-secondary pt-3" 
+                                                                 style="display: {% if edit_mode and existing_evals %}
+                                                                                  {% for eval in existing_evals %}
+                                                                                  {% if eval.sub_criterion_id == sub.id %}block{% endif %}
+                                                                                  {% endfor %}
+                                                                                {% else %}none{% endif %};">
+                                                                <h6 class="text-info mb-2">
+                                                                    <i class="fas fa-file-upload me-1"></i>
+                                                                    {{ _('Upload File') }}
+                                                                </h6>
+                                                                <div class="custom-file-upload">
+                                                                    <input type="file" 
+                                                                           class="file-input-hidden" 
+                                                                           id="file_{{ sub.id }}"
+                                                                           name="file_{{ sub.id }}"
+                                                                           accept=".pdf,.doc,.docx,.txt"
+                                                                           onchange="updateFileName(this)">
+                                                                    <label for="file_{{ sub.id }}" class="btn btn-outline-secondary w-100 text-start d-flex justify-content-between align-items-center">
+                                                                        <span class="file-name" data-default="{{ _('No file selected') }}">{{ _('No file selected') }}</span>
+                                                                        <i class="fas fa-upload"></i>
+                                                                    </label>
+                                                                </div>
+                                                                {% if edit_mode and existing_docs %}
+                                                                    {% for doc in existing_docs %}
+                                                                        {% if doc.sub_criterion_id == sub.id %}
+                                                                        <div class="mt-2">
+                                                                            <small class="text-muted">{{ _('Current file') }}: </small>
+                                                                            <a href="{{ url_for('static', filename='uploads/' + doc.file_path.split('/')[-1]) }}" 
+                                                                               target="_blank" class="text-light">
+                                                                                <i class="fas fa-file"></i> {{ doc.filename }}
+                                                                            </a>
+                                                                        </div>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                {% endif %}
+                                                                <small class="text-muted">
+                                                                    {{ _('Supported formats: PDF, Word, Text') }}
+                                                                </small>
+                                                            </div>
+                                                            
+                                                            <!-- KPI Tanımları Bölümü -->
+                                                            {% if sub.kpi_definitions %}
+                                                            <div class="mt-4 border-top border-secondary pt-3">
+                                                                <div class="kpi-definitions-section">
+                                                                    <h6 class="text-warning mb-3">
+                                                                        <i class="fas fa-chart-line me-2"></i>
+                                                                        {{ _('Performance Indicators (KPI)') }}
+                                                                    </h6>
+                                                                    
+                                                                    <div class="accordion kpi-accordion" id="kpiAccordion_{{ sub.id }}">
+                                                                        {% for kpi in sub.kpi_definitions %}
+                                                                        <div class="accordion-item bg-dark border-secondary mb-2">
+                                                                            <h2 class="accordion-header" id="kpiHeading_{{ kpi.id }}">
+                                                                                <button class="accordion-button collapsed bg-dark text-light" 
+                                                                                        type="button" 
+                                                                                        data-bs-toggle="collapse" 
+                                                                                        data-bs-target="#kpiCollapse_{{ kpi.id }}" 
+                                                                                        aria-expanded="false" 
+                                                                                        aria-controls="kpiCollapse_{{ kpi.id }}">
+                                                                                    <div>
+                                                                                        <span class="text-primary">{{ kpi.name }}</span>
+                                                                                    </div>
+                                                                                </button>
+                                                                            </h2>
+                                                                            <div id="kpiCollapse_{{ kpi.id }}" 
+                                                                                 class="accordion-collapse collapse" 
+                                                                                 aria-labelledby="kpiHeading_{{ kpi.id }}" 
+                                                                                 data-bs-parent="#kpiAccordion_{{ sub.id }}">
+                                                                                <div class="accordion-body text-light">
+                                                                                    <p class="small text-muted mb-3">{{ kpi.description }}</p>
+                                                                                    <div>
+                                                                                        <h6 class="text-info mb-2 small">
+                                                                                            <i class="fas fa-paperclip me-1"></i>
+                                                                                            {{ _('Upload Evidence Document') }}
+                                                                                        </h6>
+                                                                                        <div class="custom-file-upload">
+                                                                                            <input type="file" 
+                                                                                                   class="file-input-hidden" 
+                                                                                                   id="kpi_file_{{ kpi.id }}"
+                                                                                                   name="kpi_file_{{ kpi.id }}"
+                                                                                                   accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
+                                                                                                   onchange="updateFileName(this)">
+                                                                                            <label for="kpi_file_{{ kpi.id }}" class="btn btn-outline-secondary btn-sm w-100 text-start d-flex justify-content-between align-items-center">
+                                                                                                <span class="file-name" data-default="{{ _('No file selected') }}">{{ _('No file selected') }}</span>
+                                                                                                <i class="fas fa-upload"></i>
+                                                                                            </label>
+                                                                                        </div>
+                                                                                        {% if edit_mode and existing_kpi_docs %}
+                                                                                            {% for doc in existing_kpi_docs %}
+                                                                                                {% if doc.kpi_id == kpi.id %}
+                                                                                                <div class="mt-2">
+                                                                                                    <small class="text-muted">{{ _('Current file') }}: </small>
+                                                                                                    <a href="{{ url_for('static', filename='uploads/kpi_documents/' + doc.file_path.split('/')[-1]) }}" 
+                                                                                                       target="_blank" class="text-light">
+                                                                                                        <i class="fas fa-file"></i> {{ doc.filename }}
+                                                                                                    </a>
+                                                                                                </div>
+                                                                                                {% endif %}
+                                                                                            {% endfor %}
+                                                                                        {% endif %}
+                                                                                        <small class="text-muted d-block mt-1">
+                                                                                            {{ _('Upload evidence document for this KPI') }}
+                                                                                        </small>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        {% endfor %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                        {% else %}
+                                            <div class="alert alert-dark border-secondary">
+                                                {{ _('No sub-criteria defined for this criterion.') }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ url_for('main.my_applications') if edit_mode else url_for('main.dashboard') }}" 
+                               class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>{{ _('Cancel') }}
+                            </a>
+                            <div class="d-flex gap-2">
+                                {% if not edit_mode %}
+                                {{ form.save_draft(class="btn btn-outline-warning") }}
+                                {% endif %}
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>
+                                    {% if edit_mode %}{{ _('Save Changes') }}{% else %}{{ _('Submit Application') }}{% endif %}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Show/hide file upload sections when checkboxes are clicked
+    document.querySelectorAll('input[type="checkbox"][data-upload-target]').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const uploadSection = document.getElementById(this.dataset.uploadTarget);
+            if (uploadSection) {
+                uploadSection.style.display = this.checked ? 'block' : 'none';
+            }
+            
+            // Eğer seçiliyse alt kriter detayları da açılsın
+            if (this.checked && this.dataset.collapseTarget) {
+                const collapseTarget = document.getElementById(this.dataset.collapseTarget);
+                if (collapseTarget && !collapseTarget.classList.contains('show')) {
+                    new bootstrap.Collapse(collapseTarget).show();
+                }
+            }
+        });
+    });
+    
+    // Açılır kapanır başlık ikonları için
+    document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(header => {
+        header.addEventListener('click', function() {
+            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+            const toggleIcon = this.querySelector('.toggle-icon, .toggle-icon-sm');
+            
+            if (toggleIcon) {
+                if (isExpanded) {
+                    toggleIcon.style.transform = 'rotate(0deg)';
+                } else {
+                    toggleIcon.style.transform = 'rotate(-180deg)';
+                }
+            }
+        });
+    });
+    
+    // Açılır/kapanır ok ikonları için stil
+    const applyIconStyles = () => {
+        document.querySelectorAll('.toggle-icon, .toggle-icon-sm').forEach(icon => {
+            icon.style.transition = 'transform 0.3s';
+            const header = icon.closest('[data-bs-toggle="collapse"]');
+            if (header) {
+                const isExpanded = header.getAttribute('aria-expanded') === 'true';
+                icon.style.transform = isExpanded ? 'rotate(-180deg)' : 'rotate(0deg)';
+            }
+        });
+    };
+    
+    applyIconStyles();
+});
+
+// Function to select/deselect all criteria
+function selectAllCriteria() {
+    const checkboxes = document.querySelectorAll('.criterion-checkbox');
+    const uploadSections = document.querySelectorAll('.upload-section');
+    const isAllChecked = Array.from(checkboxes).every(cb => cb.checked);
+
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = !isAllChecked;
+        const uploadSection = document.getElementById(checkbox.dataset.uploadTarget);
+        if (uploadSection) {
+            uploadSection.style.display = !isAllChecked ? 'block' : 'none';
+        }
+    });
+}
+
+// Bir kriter grubu içindeki tüm alt kriterleri göster/gizle
+function toggleAllSubCriteria(criterionId) {
+    const subCriteriaCollapse = document.querySelectorAll(`#criterion_${criterionId} [data-bs-target^="#sub_content_"]`);
+    const allExpanded = Array.from(subCriteriaCollapse).every(el => el.getAttribute('aria-expanded') === 'true');
+    
+    subCriteriaCollapse.forEach(header => {
+        const targetId = header.getAttribute('data-bs-target');
+        const target = document.querySelector(targetId);
+        
+        if (allExpanded) {
+            // Tümünü kapat
+            if (target && target.classList.contains('show')) {
+                new bootstrap.Collapse(target).hide();
+            }
+        } else {
+            // Tümünü aç
+            if (target && !target.classList.contains('show')) {
+                new bootstrap.Collapse(target).show();
+            }
+        }
+    });
+}
+</script>
+
+<style>
+/* Açılır/kapanır stilleri */
+.cursor-pointer {
+    cursor: pointer;
+}
+.cursor-pointer:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* KPI akordeon stilleri */
+.accordion-button {
+    padding: 0.75rem 1rem;
+    box-shadow: none !important;
+}
+.accordion-button:not(.collapsed) {
+    background-color: rgba(52, 58, 64, 0.8) !important;
+    color: #fff !important;
+}
+.accordion-button:focus {
+    box-shadow: none;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+.accordion-button::after {
+    filter: invert(100%);
+}
+
+/* Alt kriter kartları */
+.sub-criteria-container .card {
+    transition: all 0.2s ease;
+}
+.sub-criteria-container .card:hover {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.3);
+}
+
+/* Toggle icon */
+.toggle-icon-sm {
+    font-size: 0.8rem;
+    transition: transform 0.3s;
+}
+
+/* Custom file upload styles */
+.file-input-hidden {
+    display: none;
+}
+
+.custom-file-upload label {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.custom-file-upload label:hover {
+    background-color: rgba(108, 117, 125, 0.2) !important;
+    border-color: #6c757d !important;
+}
+
+.custom-file-upload .file-name {
+    color: #adb5bd;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 90%;
+}
+</style>
+
+<script>
+// Update file name when file is selected
+function updateFileName(input) {
+    const label = input.nextElementSibling;
+    const fileNameSpan = label.querySelector('.file-name');
+    const defaultText = fileNameSpan.getAttribute('data-default');
+    
+    if (input.files && input.files.length > 0) {
+        const fileName = input.files[0].name;
+        fileNameSpan.textContent = fileName;
+        fileNameSpan.style.color = '#fff';
+    } else {
+        fileNameSpan.textContent = defaultText;
+        fileNameSpan.style.color = '#adb5bd';
+    }
+}
+</script>
+{% endblock %}
