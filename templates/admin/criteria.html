@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>{{ _('Manage Criteria') }}</h2>
+                <a href="{{ url_for('admin.new_criterion') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i> {{ _('Add New Criterion') }}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% if criteria %}
+    <div class="row">
+        {% for criterion in criteria %}
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">{{ criterion.name }}</h5>
+                        <div class="d-flex gap-2">
+                            <a href="{{ url_for('admin.edit_criterion', criterion_id=criterion.id) }}" 
+                               class="btn btn-primary btn-sm">
+                                <i class="fas fa-edit me-1"></i> {{ _('Edit') }}
+                            </a>
+                            <a href="{{ url_for('admin.new_sub_criterion', criterion_id=criterion.id) }}" 
+                               class="btn btn-success btn-sm">
+                                <i class="fas fa-plus me-1"></i> {{ _('Add Sub-criterion') }}
+                            </a>
+                            <form action="{{ url_for('admin.delete_criterion', criterion_id=criterion.id) }}" 
+                                  method="POST" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-danger btn-sm" 
+                                        onclick="return confirm('{{ _('Are you sure you want to delete this criterion?') }}')">
+                                    <i class="fas fa-trash me-1"></i> {{ _('Delete') }}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <p class="text-muted mb-2">{{ criterion.description or _('No description provided') }}</p>
+                        <div class="d-flex gap-2">
+                            <span class="badge {% if criterion.is_cost %}bg-danger{% else %}bg-success{% endif %}">
+                                {{ _('Cost') if criterion.is_cost else _('Benefit') }}
+                            </span>
+                            <span class="badge bg-primary">
+                                {{ _('Weight') }}: {{ "%.3f"|format(criterion.weight) }}
+                            </span>
+                        </div>
+                    </div>
+
+                    {% if criterion.sub_criteria %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>{{ _('Name') }}</th>
+                                    <th>{{ _('Description') }}</th>
+                                    <th>{{ _('Weight') }}</th>
+                                    <th>{{ _('KPI') }}</th>
+                                    <th class="text-end">{{ _('Actions') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sub in criterion.sub_criteria %}
+                                <tr>
+                                    <td>{{ sub.name }}</td>
+                                    <td>{{ sub.description or _('No description') }}</td>
+                                    <td>{{ "%.3f"|format(sub.weight) }}</td>
+                                    <td>
+                                        {% if sub.has_kpi %}
+                                            <span class="badge bg-success" data-bs-toggle="tooltip" title="{{ sub.kpi_name }}: {{ sub.kpi_target_value }} {{ sub.kpi_unit }}">
+                                                <i class="fas fa-chart-line me-1"></i>
+                                                {{ _('KPI Active') }}
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ _('No KPI') }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="d-flex gap-2 justify-content-end">
+                                            <a href="{{ url_for('main.edit_subcriterion', subcriterion_id=sub.id) }}" 
+                                               class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-edit me-1"></i> {{ _('Edit') }}
+                                            </a>
+                                            <form action="{{ url_for('admin.delete_sub_criterion', sub_criterion_id=sub.id) }}" 
+                                                  method="POST" class="d-inline">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                <button type="submit" class="btn btn-outline-danger btn-sm" 
+                                                        onclick="return confirm('{{ _('Are you sure you want to delete this sub-criterion?') }}')">
+                                                    <i class="fas fa-trash me-1"></i> {{ _('Delete') }}
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>{{ _('No sub-criteria added yet.') }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <p class="mb-0">{{ _('No criteria defined yet. Click the "Add New Criterion" button to get started.') }}</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.gap-2 {
+    gap: 0.5rem !important;
+}
+.me-1 {
+    margin-right: 0.25rem !important;
+}
+.me-2 {
+    margin-right: 0.5rem !important;
+}
+</style>
+{% endblock %}
