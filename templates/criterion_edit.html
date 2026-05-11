@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">{{ _('Edit Criterion') }}</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Criterion Edit Form -->
+                    <form method="POST" action="{{ url_for('main.edit_criterion', criterion_id=criterion.id) }}">
+                        <div class="mb-3">
+                            <label class="form-label">{{ _('Name') }}</label>
+                            <input type="text" name="name" class="form-control" 
+                                   value="{{ criterion.name }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ _('Description') }}</label>
+                            <textarea name="description" class="form-control" rows="3">{{ criterion.description }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ _('Weight') }}</label>
+                            <input type="number" name="weight" class="form-control" 
+                                   value="{{ criterion.weight }}" step="0.01" min="0" max="1" required>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" name="is_cost" class="form-check-input" 
+                                       id="is_cost" {% if criterion.is_cost %}checked{% endif %}>
+                                <label class="form-check-label" for="is_cost">{{ _('Is Cost Criterion') }}</label>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                {% if current_user.is_administrator() %}
+                                <a href="{{ url_for('main.admin_criteria') }}" class="btn btn-secondary me-2">{{ _('Cancel') }}</a>
+                                {% else %}
+                                <a href="{{ url_for('main.view_project', project_id=criterion.project_id) }}" class="btn btn-secondary me-2">{{ _('Cancel') }}</a>
+                                {% endif %}
+                                <button type="submit" class="btn btn-primary">{{ _('Update Criterion') }}</button>
+                            </div>
+                            <a href="{{ url_for('admin.new_sub_criterion', criterion_id=criterion.id) }}" class="btn btn-success">
+                                <i class="fas fa-plus me-1"></i>{{ _('Add Sub-criterion') }}
+                            </a>
+                        </div>
+                    </form>
+
+                    <!-- Sub-criteria Section -->
+                    <div class="mt-5">
+                        <h5>{{ _('Sub-criteria') }}</h5>
+                        {% if criterion.sub_criteria %}
+                        <div class="list-group mt-3">
+                            {% for sub in criterion.sub_criteria|sort(attribute='id') %}
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">{{ sub.name }}</h6>
+                                        <p class="mb-1 text-muted small">{{ sub.description }}</p>
+                                        <small>{{ _('Weight') }}: {{ "%.3f"|format(sub.weight) }}</small>
+                                    </div>
+                                    <div>
+                                        <a href="{{ url_for('admin.edit_sub_criterion', sub_criterion_id=sub.id) }}" 
+                                           class="btn btn-sm btn-primary">
+                                            <i class="fas fa-edit me-1"></i>{{ _('Edit') }}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p class="text-muted">{{ _('No sub-criteria added yet.') }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
