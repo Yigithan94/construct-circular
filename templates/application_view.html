@@ -1,0 +1,592 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>{{ _('Application Details') }}</h2>
+                <!-- Status Update Buttons -->
+                {% if is_owner or current_user.is_administrator() %}
+                <div class="d-flex gap-2">
+                    <!-- Accept Application Form -->
+                    <form action="{{ url_for('main.accept_application', application_id=application.id) }}" method="POST" class="d-inline">
+                        {{ form.csrf_token }}
+                        <button type="submit" class="btn btn-success" 
+                                {% if application.status.value == 'accepted' %}disabled{% endif %}>
+                            <i class="fas fa-check"></i> {{ _('Approve') }}
+                        </button>
+                    </form>
+
+                    <!-- Reject Application Form -->
+                    <form action="{{ url_for('main.reject_application', application_id=application.id) }}" method="POST" class="d-inline">
+                        {{ form.csrf_token }}
+                        <button type="submit" class="btn btn-danger"
+                                {% if application.status.value == 'rejected' %}disabled{% endif %}>
+                            <i class="fas fa-times"></i> {{ _('Reject') }}
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+                <div>
+                    <a href="{{ url_for('main.view_project', project_id=project.id) }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> {{ _('Back to Project') }}
+                    </a>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">{{ _('Application Information') }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>{{ _('Project') }}:</strong> {{ project.name }}</p>
+                            <p><strong>{{ _('Contractor') }}:</strong> {{ application.contractor.username }}</p>
+                            <p><strong>{{ _('Status') }}:</strong> 
+                                <span class="badge 
+                                    {% if application.status.value == 'accepted' %}bg-success
+                                    {% elif application.status.value == 'rejected' %}bg-danger
+                                    {% else %}bg-warning{% endif %}">
+                                    {{ application.status.value|title }}
+                                </span>
+                            </p>
+                            <p><strong>{{ _('Submitted') }}:</strong> {{ application.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>{{ _('Proposed Duration') }}:</strong> {{ application.proposed_duration }} {{ _('days') }}</p>
+                            <p><strong>{{ _('Proposed Budget') }}:</strong> 
+                                {% if application.proposed_budget is not none %}
+                                    ${{ "%.2f"|format(application.proposed_budget) }}
+                                {% else %}
+                                    {{ _('Not specified') }}
+                                {% endif %}
+                            </p>
+                            <p><strong>{{ _('TOPSIS Score') }}:</strong> 
+                                {% if application.topsis_score is not none %}
+                                    <span class="badge bg-info">{{ "%.8f"|format(application.topsis_score) }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ _('Not evaluated') }}</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    {% if application.cover_letter %}
+                    <div class="mt-4">
+                        <h5 class="card-title">{{ _('Cover Letter') }}</h5>
+                        <div class="card-text">
+                            {{ application.cover_letter|replace('\n', '<br>')|safe }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if evaluations %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">{{ _('Criterion Evaluations and Documents') }}</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Score Update Form -->
+                    <form method="POST" action="{{ url_for('main.update_scores', application_id=application.id) }}" id="score-update-form">
+                        {{ form.csrf_token }}
+                        <!-- Debug bilgisi -->
+                        <div class="alert alert-info mb-4" role="alert">
+                            <strong>Bilgi:</strong> Değerlendirme yaparken KPI puanlarını 1-7 arasında seçtiğinizden emin olun ve sonra "Puanları Kaydet" düğmesine tıklayın.
+                        </div>
+                        {% for eval in evaluations %}
+                        <div class="criterion-section mb-4">
+                            <h6 class="text-primary">{{ eval.criterion.name }}</h6>
+
+                            <!-- Documents for this criterion -->
+                            <div class="documents-section ms-3">
+                                {% set has_documents = false %}
+                                {% for doc in application.documents %}
+                                    {% if doc.criterion_id == eval.criterion_id %}
+                                        {% set has_documents = true %}
+                                        <div class="document-item mb-2">
+                                            <i class="fas fa-file me-2 text-info"></i>
+                                            <a href="{{ url_for('static', filename='uploads/' + doc.file_path.split('/')[-1]) }}" 
+                                               target="_blank" class="text-decoration-none">
+                                                {{ doc.filename }}
+                                            </a>
+                                            <span class="text-muted ms-2">({{ doc.file_type|upper }})</span>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if not has_documents %}
+                                    <p class="text-muted ms-3"><small>{{ _('No documents uploaded for this criterion') }}</small></p>
+                                {% endif %}
+                            </div>
+
+                            <!-- Sub-criteria section with scores -->
+                            {% if eval.sub_criterion_id %}
+                                <div class="sub-criterion-section ms-4 mt-2">
+                                    {% set sub = SubCriterion.query.get(eval.sub_criterion_id) %}
+                                    {% if sub %}
+                                        <div class="d-flex align-items-center">
+                                            <h6 class="text-secondary mb-0">
+                                                <i class="fas fa-layer-group me-2"></i>
+                                                {{ sub.name }}
+                                                <small class="text-muted ms-2">(Weight: {{ "%.6f"|format(sub.weight) }})</small>
+                                            </h6>
+                                            {% if is_owner or current_user.is_administrator() %}
+                                                <div class="ms-3">
+                                                    {% set existing_score = application.decision_scores|selectattr('sub_criterion_id', 'equalto', sub.id)|first %}
+                                                    {% if sub.has_kpi %}
+                                                        <!-- KPI'ları olan alt kriterler için otomatik hesaplanacak değer -->
+                                                        <div class="d-flex align-items-center">
+                                                            <!-- Görünür olan readonly input -->
+                                                            <input type="text" class="form-control form-control-sm sub-criterion-score-input" 
+                                                                id="visible_score_{{ sub.id }}"
+                                                                style="width: 80px; background-color: #495057;" 
+                                                                value="{{ existing_score.score if existing_score else '' }}" readonly>
+                                                            <!-- Gerçek form değeri - gizli input -->
+                                                            <input type="hidden" name="score_{{ sub.id }}" id="hidden_score_{{ sub.id }}" 
+                                                                value="{{ existing_score.score if existing_score else '' }}">
+                                                            <span class="badge {% if existing_score %}bg-info{% else %}bg-secondary{% endif %} ms-2 auto-calc-badge">
+                                                                {% if existing_score %}
+                                                                    {{ _('Auto-calculated from KPI scores') }}
+                                                                {% else %}
+                                                                    {{ _('Will be calculated from KPI scores') }}
+                                                                {% endif %}
+                                                            </span>
+                                                        </div>
+                                                    {% else %}
+                                                        <!-- Normal alt kriterler için puan seçimi -->
+                                                        <select name="score_{{ sub.id }}" class="form-select form-select-sm" style="width: 100px">
+                                                            <option value="">{{ _('Select Score') }}</option>
+                                                            {% for i in range(1, 8) %}
+                                                                <option value="{{ i }}" {% if existing_score and existing_score.score == i %}selected{% endif %}>{{ i }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    {% endif %}
+                                                </div>
+                                            {% else %}
+                                                {% set existing_score = application.decision_scores|selectattr('sub_criterion_id', 'equalto', sub.id)|first %}
+                                                {% if existing_score %}
+                                                    <span class="badge bg-info ms-2">{{ _('Score') }}: {{ existing_score.score }}/7</span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <!-- Documents for this sub-criterion -->
+                                        <div class="documents-section ms-3 mt-2">
+                                            {% set has_documents = false %}
+                                            {% for doc in application.documents %}
+                                                {% if doc.sub_criterion_id == sub.id %}
+                                                    {% set has_documents = true %}
+                                                    <div class="document-item mb-2">
+                                                        <i class="fas fa-file me-2 text-secondary"></i>
+                                                        <a href="{{ url_for('static', filename='uploads/' + doc.file_path.split('/')[-1]) }}" 
+                                                           target="_blank" class="text-decoration-none">
+                                                            {{ doc.filename }}
+                                                        </a>
+                                                        <span class="text-muted ms-2">({{ doc.file_type|upper }})</span>
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                            {% if not has_documents %}
+                                                <p class="text-muted"><small>{{ _('No documents uploaded for this sub-criterion') }}</small></p>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <!-- KPI Documents for this sub-criterion -->
+                                        {% set kpi_definitions = sub.kpi_definitions %}
+                                        {% if kpi_definitions %}
+                                            <div class="kpi-section ms-3 mt-3">
+                                                <h6 class="text-warning mb-2">{{ _('Performance Indicators') }}</h6>
+                                                <div class="list-group">
+                                                    {% for kpi in kpi_definitions %}
+                                                        <div class="list-group-item border-light bg-dark text-light mb-2">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <h6 class="mb-1 text-primary">{{ kpi.name }}</h6>
+                                                            </div>
+                                                            <p class="small text-muted mb-2">{{ kpi.description }}</p>
+                                                            
+                                                            <!-- KPI documents -->
+                                                            <div class="documents-section mt-2">
+                                                                {% set has_kpi_docs = false %}
+                                                                {% for doc in application.kpi_documents %}
+                                                                    {% if doc.kpi_id == kpi.id %}
+                                                                        {% set has_kpi_docs = true %}
+                                                                        <div class="document-item">
+                                                                            <i class="fas fa-file-alt me-2 text-success"></i>
+                                                                            <a href="{{ url_for('static', filename='uploads/kpi_documents/' + doc.file_path.split('/')[-1]) }}" 
+                                                                               target="_blank" class="text-light">
+                                                                                {{ doc.filename }}
+                                                                            </a>
+                                                                            <span class="text-muted ms-2">({{ doc.file_type|upper }})</span>
+                                                                            
+                                                                            <!-- AI değerlendirme sonuçları -->
+                                                                            {% if doc.ai_evaluated %}
+                                                                            <div class="mt-2 ps-3 border-start border-info">
+                                                                                <div class="d-flex align-items-center">
+                                                                                    <span class="badge bg-primary me-2">
+                                                                                        <i class="fas fa-robot me-1"></i> {{ _('AI Score') }}: {{ doc.ai_score }}/7
+                                                                                    </span>
+                                                                                    <button type="button" class="btn btn-sm btn-outline-info" 
+                                                                                            data-bs-toggle="collapse" 
+                                                                                            data-bs-target="#ai-explanation-{{ doc.id }}">
+                                                                                        <i class="fas fa-eye me-1"></i>{{ _('View AI Analysis') }}
+                                                                                    </button>
+                                                                                </div>
+                                                                                <div class="collapse mt-2" id="ai-explanation-{{ doc.id }}">
+                                                                                    <div class="card card-body bg-dark text-light border-info">
+                                                                                        <h6 class="text-info mb-2"><i class="fas fa-chart-bar me-1"></i>{{ _('AI Evaluation Result') }}</h6>
+                                                                                        <p class="small mb-0">{{ doc.ai_explanation }}</p>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            {% elif kpi.use_ai_evaluation %}
+                                                                            <div class="mt-2 ps-3 border-start border-secondary">
+                                                                                <span class="badge bg-secondary">
+                                                                                    <i class="fas fa-robot me-1"></i> {{ _('Pending AI Evaluation') }}
+                                                                                </span>
+                                                                                <small class="d-block text-muted mt-1">
+                                                                                    <i class="fas fa-info-circle me-1"></i>{{ _('The document will be evaluated when the AI service processes the queue.') }}
+                                                                                </small>
+                                                                            </div>
+                                                                            {% endif %}
+                                                                        </div>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                                {% if not has_kpi_docs %}
+                                                                    <p class="text-muted"><small>{{ _('No documents uploaded for this KPI') }}</small></p>
+                                                                {% endif %}
+                                                            </div>
+                                                            
+                                                            <!-- KPI Scoring -->
+                                                            {% if is_owner or current_user.is_administrator() %}
+                                                            <div class="kpi-score-section mt-2 d-flex align-items-center">
+                                                                <label class="text-light me-2">{{ _('KPI Score') }}:</label>
+                                                                {% set existing_kpi_score = application.kpi_scores|selectattr('kpi_id', 'equalto', kpi.id)|first %}
+                                                                <select name="kpi_score_{{ kpi.id }}" class="form-select form-select-sm kpi-score-select" 
+                                                                        style="width: 80px" 
+                                                                        data-subcriterion-id="{{ sub.id }}"
+                                                                        data-kpi-id="{{ kpi.id }}">
+                                                                    <option value="">{{ _('Score') }}</option>
+                                                                    {% for i in range(1, 8) %}
+                                                                        <option value="{{ i }}" 
+                                                                            {% if existing_kpi_score and existing_kpi_score.score == i %}selected
+                                                                            {% elif kpi.current_score == i %}selected{% endif %}>
+                                                                            {{ i }}
+                                                                        </option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                                <!-- Debug bilgisi -->
+                                                                {% if existing_kpi_score %}
+                                                                <div class="mt-1 d-flex align-items-center">
+                                                                    <small class="text-success me-2">
+                                                                        <i class="fas fa-check-circle"></i> Kayıtlı puan: {{ existing_kpi_score.score }}
+                                                                    </small>
+                                                                    <input type="hidden" name="existing_kpi_{{ kpi.id }}" value="{{ existing_kpi_score.score }}">
+                                                                </div>
+                                                                {% elif kpi.current_score %}
+                                                                <div class="mt-1 d-flex align-items-center">
+                                                                    <small class="text-success me-2">
+                                                                        <i class="fas fa-check-circle"></i> Yüklenmiş puan: {{ kpi.current_score }}
+                                                                    </small>
+                                                                    <input type="hidden" name="loaded_kpi_{{ kpi.id }}" value="{{ kpi.current_score }}">
+                                                                </div>
+                                                                {% else %}
+                                                                <div class="mt-1">
+                                                                    <small class="text-muted">
+                                                                        <i class="fas fa-info-circle"></i> Henüz değerlendirilmemiş
+                                                                    </small>
+                                                                </div>
+                                                                {% endif %}
+                                                            </div>
+                                                            {% else %}
+                                                                {% set existing_kpi_score = application.kpi_scores|selectattr('kpi_id', 'equalto', kpi.id)|first %}
+                                                                {% if existing_kpi_score %}
+                                                                    <div class="mt-2">
+                                                                        <span class="badge bg-primary">{{ _('Score') }}: {{ existing_kpi_score.score }}/7</span>
+                                                                    </div>
+                                                                {% endif %}
+                                                            {% endif %}
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% if not loop.last %}<hr>{% endif %}
+                        {% endfor %}
+
+                        {% if is_owner or current_user.is_administrator() %}
+                        <div class="mt-4">
+                            <!-- Save Scores Button -->
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save"></i> {{ _('Save Scores') }}
+                            </button>
+                            <!-- Yardım metni -->
+                            <div class="alert alert-warning mt-2" role="alert">
+                                <small><i class="fas fa-info-circle me-1"></i> KPI değerlendirmelerini yaptıktan sonra "Puanları Kaydet" düğmesine tıklayın. Bu seçimlerinizi kaydedecektir.</small>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded - initializing KPI calculation system');
+    
+    // Form gönderimi için özel işlem
+    const scoreForm = document.getElementById('score-update-form');
+    if (scoreForm) {
+        scoreForm.addEventListener('submit', function(e) {
+            // Submit öncesi son kontroller
+            console.log('Form is being submitted, preparing data...');
+            
+            // Tüm KPI select elementlerinin değerlerini konsola yazdır
+            const allSelects = this.querySelectorAll('select[name^="kpi_score_"]');
+            console.log(`Found ${allSelects.length} KPI select elements in form`);
+            
+            allSelects.forEach(select => {
+                console.log(`${select.name}: ${select.value}`);
+            });
+            
+            // Sub-criterion score değerlerini konsola yazdır  
+            const allScoreInputs = this.querySelectorAll('input[name^="score_"]');
+            console.log(`Found ${allScoreInputs.length} score input fields`);
+            
+            allScoreInputs.forEach(input => {
+                console.log(`${input.name}: ${input.value}`);
+            });
+        });
+    }
+    
+    // Tüm KPI puan seçeneklerini bul
+    const kpiScoreSelects = document.querySelectorAll('.kpi-score-select');
+    console.log(`Found ${kpiScoreSelects.length} KPI score selects`);
+    
+    // KPI değişikliklerini dinlemeye başla
+    kpiScoreSelects.forEach(select => {
+        select.addEventListener('change', function() {
+            const subCriterionId = this.getAttribute('data-subcriterion-id');
+            console.log(`KPI score changed for sub-criterion ID: ${subCriterionId}`);
+            calculateAndUpdateScore(subCriterionId);
+        });
+    });
+    
+    // Sayfa yüklendiğinde tüm alt kriterlerin puanlarını hesapla
+    initializeScores();
+    
+    // Tüm alt kriterlerin başlangıç puanlarını hesapla
+    function initializeScores() {
+        console.log('Initializing all subcriteria scores');
+        // Benzersiz alt kriter ID'lerini bul
+        const uniqueIds = new Set();
+        kpiScoreSelects.forEach(select => {
+            const id = select.getAttribute('data-subcriterion-id');
+            if (id) uniqueIds.add(id);
+        });
+        
+        console.log(`Found ${uniqueIds.size} unique subcriteria`);
+        
+        // Her bir alt kriter için puanları hesapla
+        uniqueIds.forEach(id => {
+            calculateAndUpdateScore(id);
+        });
+    }
+    
+    // Belirli bir alt kriterin puanını hesapla ve güncelle
+    function calculateAndUpdateScore(subCriterionId) {
+        console.log(`Calculating score for sub-criterion ID: ${subCriterionId}`);
+        
+        // Bu alt kritere ait KPI seçimlerini bul
+        const relatedKPIs = document.querySelectorAll(`.kpi-score-select[data-subcriterion-id="${subCriterionId}"]`);
+        console.log(`Found ${relatedKPIs.length} related KPIs`);
+        
+        // Toplam puanı ve adet sayısını hesapla
+        let sum = 0;
+        let count = 0;
+        
+        relatedKPIs.forEach(kpi => {
+            // Bu şekilde seçili değeri alıyoruz
+            const selectedValue = kpi.options[kpi.selectedIndex]?.value;
+            console.log(`KPI ${kpi.name || kpi.id} selected value: ${selectedValue}`);
+            
+            if (selectedValue && selectedValue !== "") {
+                const kpiValue = parseInt(selectedValue);
+                console.log(`  - Adding value: ${kpiValue} to sum`);
+                sum += kpiValue;
+                count++;
+            }
+        });
+        
+        console.log(`Sum: ${sum}, Count: ${count}`);
+        
+        // Bu alt kritere ait hidden input'u bul
+        // Doğrudan name kullanarak bulmaya çalışalım
+        const hiddenScoreInput = document.querySelector(`input[name="score_${subCriterionId}"]`);
+        
+        if (hiddenScoreInput) {
+            console.log(`Found hidden input for sub-criterion ${subCriterionId}`);
+            
+            if (count > 0) {
+                // Ortalamayı hesapla
+                const avgScore = Math.round(sum / count);
+                console.log(`Average score: ${avgScore}`);
+                
+                // Hidden input değerini güncelle
+                hiddenScoreInput.value = avgScore;
+                
+                // Eğer bir görünür input da varsa onu da güncelle
+                const visibleInput = document.querySelector(`#visible_score_${subCriterionId}`);
+                if (visibleInput) {
+                    visibleInput.value = avgScore;
+                }
+                
+                // Badge'i güncelle (varsa)
+                const parentElement = hiddenScoreInput.closest('div');
+                if (parentElement) {
+                    const badge = parentElement.querySelector('.auto-calc-badge') || 
+                                  parentElement.parentElement.querySelector('.auto-calc-badge');
+                    
+                    if (badge) {
+                        badge.textContent = '{{ _("Auto-calculated from KPI scores") }}';
+                        badge.classList.remove('bg-secondary');
+                        badge.classList.add('bg-info');
+                    }
+                }
+            } else {
+                // Hiç puan seçilmemişse input değerini temizle
+                hiddenScoreInput.value = '';
+                
+                // Eğer bir görünür input da varsa onu da temizle
+                const visibleInput = document.querySelector(`#visible_score_${subCriterionId}`);
+                if (visibleInput) {
+                    visibleInput.value = '';
+                }
+                
+                // Badge'i güncelle (varsa)
+                const parentElement = hiddenScoreInput.closest('div');
+                if (parentElement) {
+                    const badge = parentElement.querySelector('.auto-calc-badge') || 
+                                  parentElement.parentElement.querySelector('.auto-calc-badge');
+                    
+                    if (badge) {
+                        badge.textContent = '{{ _("Will be calculated from KPI scores") }}';
+                        badge.classList.remove('bg-info');
+                        badge.classList.add('bg-secondary');
+                    }
+                }
+            }
+        } else {
+            console.warn(`Could not find hidden input for sub-criterion ${subCriterionId}`);
+        }
+    }
+});
+
+// ===== UNSAVED CHANGES WARNING SYSTEM =====
+let hasUnsavedChanges = false;
+let isFormSubmitting = false;
+
+// Track form changes
+document.addEventListener('DOMContentLoaded', function() {
+    const scoreForm = document.getElementById('score-form');
+    
+    if (scoreForm) {
+        // Track all input changes
+        const inputs = scoreForm.querySelectorAll('input, select, textarea');
+        
+        inputs.forEach(input => {
+            input.addEventListener('change', function() {
+                hasUnsavedChanges = true;
+            });
+        });
+        
+        // Mark as saved when form is submitted
+        scoreForm.addEventListener('submit', function() {
+            isFormSubmitting = true;
+            hasUnsavedChanges = false;
+        });
+    }
+    
+    // Intercept all navigation links
+    const navLinks = document.querySelectorAll('a');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            if (hasUnsavedChanges && !isFormSubmitting) {
+                e.preventDefault();
+                const targetUrl = this.href;
+                showUnsavedChangesModal(targetUrl);
+            }
+        });
+    });
+});
+
+// Show custom modal for unsaved changes
+function showUnsavedChangesModal(targetUrl) {
+    // Create modal HTML
+    const modalHTML = `
+        <div class="modal fade" id="unsavedChangesModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning text-dark">
+                        <h5 class="modal-title">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            {{ _('Unsaved Changes') }}
+                        </h5>
+                    </div>
+                    <div class="modal-body">
+                        <p>{{ _('You have unsaved changes. Do you want to leave without saving?') }}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i>
+                            {{ _('No, Stay') }}
+                        </button>
+                        <button type="button" class="btn btn-danger" onclick="confirmLeave('${targetUrl}')">
+                            <i class="fas fa-sign-out-alt me-1"></i>
+                            {{ _('Yes, Leave') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remove existing modal if any
+    const existingModal = document.getElementById('unsavedChangesModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Add modal to body
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('unsavedChangesModal'));
+    modal.show();
+}
+
+// Confirm leave and navigate
+function confirmLeave(url) {
+    hasUnsavedChanges = false;
+    window.location.href = url;
+}
+
+// Warn on page refresh/close
+window.addEventListener('beforeunload', function(e) {
+    if (hasUnsavedChanges && !isFormSubmitting) {
+        e.preventDefault();
+        e.returnValue = '';
+        return '';
+    }
+});
+</script>
+{% endblock %}
