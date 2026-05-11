@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">{{ _('Edit') if project else _('Create New') }} {{ _('Project') }}</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+
+                        <!-- Project Details -->
+                        <div class="mb-4">
+                            <h5>{{ _('Project Details') }}</h5>
+                            <div class="mb-3">
+                                {{ form.name.label(class="form-label") }}
+                                {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                                {% for error in form.name.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="mb-3">
+                                {{ form.description.label(class="form-label") }}
+                                {{ form.description(class="form-control" + (" is-invalid" if form.description.errors else ""), rows=3) }}
+                                {% for error in form.description.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="mb-3">
+                                {{ form.expectations.label(class="form-label") }}
+                                {{ form.expectations(class="form-control" + (" is-invalid" if form.expectations.errors else ""), rows=5) }}
+                                {% for error in form.expectations.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                                <small class="text-muted">{{ _('Detailed description of project requirements and expectations for contractors') }}</small>
+                            </div>
+                        </div>
+
+                        <!-- Timeline and Location -->
+                        <div class="mb-4">
+                            <h5>{{ _('Timeline and Location') }}</h5>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        {{ form.start_date.label(class="form-label") }}
+                                        {{ form.start_date(class="form-control" + (" is-invalid" if form.start_date.errors else ""), type="date") }}
+                                        {% for error in form.start_date.errors %}
+                                            <div class="invalid-feedback">{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        {{ form.deadline.label(class="form-label") }}
+                                        {{ form.deadline(class="form-control" + (" is-invalid" if form.deadline.errors else ""), type="date") }}
+                                        {% for error in form.deadline.errors %}
+                                            <div class="invalid-feedback">{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        {{ form.location.label(class="form-label") }}
+                                        {{ form.location(class="form-control" + (" is-invalid" if form.location.errors else "")) }}
+                                        {% for error in form.location.errors %}
+                                            <div class="invalid-feedback">{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">{{ _('Cancel') }}</a>
+                            <button type="submit" class="btn btn-primary">
+                                {{ _('Update') if project else _('Create') }} {{ _('Project') }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
