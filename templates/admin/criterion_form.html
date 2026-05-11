@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">{{ _('Edit Criterion') if criterion else _('Add New Criterion') }}</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" 
+                          action="{{ url_for('main.admin_edit_criterion', criterion_id=criterion.id) if criterion else url_for('main.admin_add_criterion') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <!-- Basic Information -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">{{ _('Basic Information') }}</h5>
+                            <div class="mb-3">
+                                <label class="form-label">{{ _('Name') }}</label>
+                                <input type="text" name="name" class="form-control" 
+                                       value="{{ criterion.name if criterion else '' }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">{{ _('Description') }}</label>
+                                <textarea name="description" class="form-control" rows="3">{{ criterion.description if criterion else '' }}</textarea>
+                            </div>
+                        </div>
+
+                        <!-- Weight Settings -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">{{ _('Weight Setting') }}</h5>
+                            <div class="mb-3">
+                                <label class="form-label">{{ _('Weight') }}</label>
+                                <div class="input-group">
+                                    <input type="number" 
+                                           name="weight" 
+                                           class="form-control" 
+                                           value="{{ criterion.weight if criterion else '0.000' }}"
+                                           step="any"
+                                           min="0"
+                                           max="1"
+                                           required>
+                                    <span class="input-group-text">{{ _('Overall Weight') }}</span>
+                                </div>
+                                <small class="form-text text-muted">
+                                    {{ _('Enter a decimal value between 0 and 1 (e.g., 0.125, 0.500, etc.)') }}
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Type Selection -->
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input type="checkbox" name="is_cost" class="form-check-input" id="is_cost"
+                                       {% if criterion and criterion.is_cost %}checked{% endif %}>
+                                <label class="form-check-label" for="is_cost">
+                                    {{ _('Is Cost Criterion') }}
+                                </label>
+                                <small class="form-text text-muted d-block">
+                                    {{ _('Check if this is a cost criterion (lower values are better)') }}
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('main.admin_criteria') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>{{ _('Cancel') }}
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                {{ _('Update') if criterion else _('Create') }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
