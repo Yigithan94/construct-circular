@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2>{{ project.name }} - Criteria Management</h2>
+        <button class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#newCriterionModal">
+            Add Criterion
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Criteria List</h5>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Weight</th>
+                            <th>Type</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for criterion in project.criteria %}
+                        <tr>
+                            <td>{{ criterion.name }}</td>
+                            <td>{{ criterion.weight }}</td>
+                            <td>{{ "Cost" if criterion.is_cost else "Benefit" }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-danger" onclick="deleteCriterion({{ criterion.id }})">
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- New Criterion Modal -->
+<div class="modal fade" id="newCriterionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Criterion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="newCriterionForm" method="POST" action="{{ url_for('main.add_criterion', project_id=project.id) }}">
+                    <div class="mb-3">
+                        <label for="criterionName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="criterionName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="weight" class="form-label">Weight</label>
+                        <input type="number" class="form-control" id="weight" name="weight" step="0.01" min="0" max="1" required>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="isCost" name="is_cost">
+                            <label class="form-check-label" for="isCost">
+                                Is Cost Criterion
+                            </label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Criterion</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
